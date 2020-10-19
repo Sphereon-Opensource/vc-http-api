@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import passport from 'passport';
 import issuer from './issuer';
 import verifier from './verifier';
 import holder from './holder';
@@ -9,7 +10,7 @@ export default ({config}) => {
     let api = Router();
 
     // mount the issuer resource
-    api.use('/issue', issuer({config}));
+    api.use('/issue', passport.authenticate('basic', {session: false}), issuer({config}));
 
     // mount the verifier resource
     api.use('/verify', verifier({config}));

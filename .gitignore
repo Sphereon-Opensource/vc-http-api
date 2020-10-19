@@ -4,5 +4,6 @@
 /node_modules
 .DS_Store
 /src/resources/factomDid.json
+/src/resources/authConfig.json
 .idea
 .idea/**

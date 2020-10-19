@@ -1,11 +1,13 @@
 import http from 'http';
-import express, {response} from 'express';
+import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
+import passport from './middleware/passport';
+
 
 const util = require('util');
 
@@ -26,6 +28,9 @@ app.use(bodyParser.json({
 
 // internal middleware
 app.use(middleware({config}));
+
+// authentication
+app.use(passport.initialize());
 
 // api router
 app.use('/services', api({config}));
