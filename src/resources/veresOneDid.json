@@ -1,0 +1,33 @@
+{
+  "did": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+  "keys": {
+    "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6Mkk9jg3nZaAMYA7jndydgyRmRH7FaWYiUHKMmFRZMKgAkU": {
+      "id": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6Mkk9jg3nZaAMYA7jndydgyRmRH7FaWYiUHKMmFRZMKgAkU",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58": "6hUdTYK8pp3h1EwwJ4j8afsHHgJf8qDvdLrKbHPJkwy6",
+      "privateKeyBase58": "3Zu3pqtrwvZpaZ5aFFHaHfEvWunuyLyTUJwUbARd3F7HtjQvxqbwRYBWiPVteTVMHsszPJsEGVFfHnbsyLwLTpse"
+    },
+    "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A": {
+      "id": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58": "GzLqGWodAFDKa78oMHbuBobc6s7d2t4b9XpRnnTRPEKn",
+      "privateKeyBase58": "56H5bn7U28UjCUsGABwNRGCyQQBRn1QTZwjtcxVPFGjPoiKyKtJfaVDUrNZNtVDsXsEmd7WyJrDgSoFZUg7axGAx"
+    },
+    "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvwjrrHeNTFCfT3nLtdQLEUeiggjHX2Z2FC4kq4HLev7Y": {
+      "id": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvwjrrHeNTFCfT3nLtdQLEUeiggjHX2Z2FC4kq4HLev7Y",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58": "HVUpG3Pw7hiCLYweD4SVPP6is7TS79JfZB9pznKKjhLA",
+      "privateKeyBase58": "4R2YwF4E6tTBxEHesCiDdAnRUVpapJ78wiVgRrCGhPJzCfEkTr4jXQsxoj7YLDooZs1bkxAW15U32WWx8CtKf2ZL"
+    },
+    "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkjFhRvbXfjmQ8iFHeYh42cNS7v4CtguLzvwZSXcHe8zqy": {
+      "id": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkjFhRvbXfjmQ8iFHeYh42cNS7v4CtguLzvwZSXcHe8zqy",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58": "5oSPLMHEQDufbkSws86BmGt86Uw3H26eEveWhLKdDn4b",
+      "privateKeyBase58": "2SYKG1zKYX8g6KryzUqyEz4XBTPNDvzM359h3QbV3ujxKeZg5Ao99vgaHs5eeNAcLmh8LEJThh7m2QLj15KXcVSK"
+    }
+  }
+}

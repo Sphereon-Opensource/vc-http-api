@@ -1,0 +1,42 @@
+{
+  "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f": {
+    "@context" : "https://www.w3.org/ns/did/v1",
+    "id" : "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f",
+    "assertionMethod" : [ "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f#key-0" ],
+    "authentication" : [ "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f#key-0" ],
+    "publicKey" : [ {
+      "id" : "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f#key-0",
+      "type" : "Ed25519VerificationKey2018",
+      "controller" : "did:factom:5d0dd58757119dd437c70d92b44fbf86627ee275f0f2146c3d99e441da342d9f",
+      "publicKeyBase58" : "uE6m3CUVKa76ZZCdLY7zgPeGVVvcJj7doMnppyqpssC"
+    } ]
+  },
+  "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A": {
+    "@context" : [ "https://w3id.org/did/v0.11", "https://w3id.org/veres-one/v1" ],
+    "id" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+    "assertionMethod" : [ {
+      "id" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkjFhRvbXfjmQ8iFHeYh42cNS7v4CtguLzvwZSXcHe8zqy",
+      "type" : "Ed25519VerificationKey2018",
+      "controller" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58" : "5oSPLMHEQDufbkSws86BmGt86Uw3H26eEveWhLKdDn4b"
+    } ],
+    "authentication" : [ {
+      "id" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6Mkk9jg3nZaAMYA7jndydgyRmRH7FaWYiUHKMmFRZMKgAkU",
+      "type" : "Ed25519VerificationKey2018",
+      "controller" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58" : "6hUdTYK8pp3h1EwwJ4j8afsHHgJf8qDvdLrKbHPJkwy6"
+    } ],
+    "capabilityDelegation" : [ {
+      "id" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvwjrrHeNTFCfT3nLtdQLEUeiggjHX2Z2FC4kq4HLev7Y",
+      "type" : "Ed25519VerificationKey2018",
+      "controller" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58" : "HVUpG3Pw7hiCLYweD4SVPP6is7TS79JfZB9pznKKjhLA"
+    } ],
+    "capabilityInvocation" : [ {
+      "id" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "type" : "Ed25519VerificationKey2018",
+      "controller" : "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "publicKeyBase58" : "GzLqGWodAFDKa78oMHbuBobc6s7d2t4b9XpRnnTRPEKn"
+    } ]
+  }
+}
