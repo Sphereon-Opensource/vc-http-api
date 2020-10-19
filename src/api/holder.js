@@ -6,7 +6,7 @@ const {verifyCredentialStructure} = require('../lib/credentialService');
 const {proveFactomPresentation, composeFactomPresentation} = require('../lib/factomService');
 const factomDid = require('../resources/factomDid');
 
-export default ({ config, db }) => {
+export default ({ config }) => {
     let api = Router();
 
     api.post('/presentations', (req, res) => {

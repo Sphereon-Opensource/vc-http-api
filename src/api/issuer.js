@@ -8,7 +8,7 @@ const {issueFactomCredential} = require('../lib/factomService');
 const veresOneDid = require('../resources/veresOneDid');
 const {issueVeresCredential} = require('../lib/veresOneService');
 
-export default ({ config, db }) => {
+export default ({ config }) => {
 	let api = Router();
 
 	// Internal Endpoints
@@ -61,37 +61,9 @@ export default ({ config, db }) => {
 		Support of this part of the API is OPTIONAL for implementations.
 	*/
 	api.post('/composeAndIssueCredential', (req, res) => {
-		// Receive Signed Claims
-		// Verify Claims
-		// - Require:
-
-		// Compose Credential
-		// Sign?
-		// Register Credential
-		// Return Credential
+		// not yet implemented
 
 		res.send(req.params);
-	});
-
-
-	// External endpoints
-
-
-	/*	Request Proof
-		Request the proof behind a Factom Credential. This endpoint assumes that the credential was issued by the current DID.
-	*/
-	api.get('/:credential_id/proof', (req, res) => {
-
-		res.send(res.params);
-	});
-
-
-	/*	Get Credential
-		Request the status of a Factom credential. This endpoint assumes that the credential was issued by the current DID.
-	*/
-	api.get('/:credential_id', (req, res) => {
-
-		res.send(res.params);
 	});
 
 	return api;

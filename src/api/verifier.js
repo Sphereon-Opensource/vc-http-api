@@ -4,7 +4,7 @@ import {handleVerificationError} from '../lib/util';
 const {verifyCredential, verifyPresentation} = require('../lib/verificationService');
 const {verifyCredentialStructure} = require('../lib/credentialService');
 
-export default ({ config, db }) => {
+export default ({ config }) => {
 	let api = Router();
 
 	// Internal Endpoints
