@@ -18,7 +18,7 @@ export default ({config}) => {
     api.post('/register', (req, res) => {
         const {username, password} = req.body;
         if (!username || !password) {
-            res.status(400).send({message: "username and password needed to registerNewDid"})
+            res.status(400).send({message: "username and password needed to register"})
         }
         const {publicKeyBase58, idSec} = factomService.generateNewFactomKeypair();
         registerNewDid(username, publicKeyBase58)
