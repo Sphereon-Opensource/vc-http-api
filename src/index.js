@@ -7,6 +7,7 @@ import middleware from './middleware';
 import api from './api';
 import config from './config.json';
 import passport from './middleware/passport';
+import initializeDb from './db';
 
 
 const util = require('util');
@@ -28,6 +29,9 @@ app.use(bodyParser.json({
 
 // internal middleware
 app.use(middleware({config}));
+
+// database
+initializeDb();
 
 // authentication
 app.use(passport.initialize());

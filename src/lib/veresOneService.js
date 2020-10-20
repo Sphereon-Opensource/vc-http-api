@@ -1,5 +1,5 @@
 const {Ed25519KeyPair, suites: { Ed25519Signature2018 }} = require('jsonld-signatures');
-const veresOneDid = require('../resources/veresOneDid');
+const veresOneDid = require('../resources/did/veresOneDid.json');
 const vc = require('vc-js');
 const {documentLoader} = require('./customDocumentLoader');
 

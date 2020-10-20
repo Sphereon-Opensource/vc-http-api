@@ -1,6 +1,0 @@
-{
-  "issuerAuthentication": {
-    "username": "<insert-raw-username>",
-    "password": "<insert-raw-password>"
-  }
-}

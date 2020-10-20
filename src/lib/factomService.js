@@ -1,8 +1,10 @@
+import {app as FactomIdentityLib} from 'factom-identity-lib';
+
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
-const {identity} = require('../resources/factomDid');
+const {identity} = require('../resources/did/factomDid.json');
 const {sign} = require('tweetnacl/nacl-fast');
 const base58 = require('bs58');
-const factomDid = require('../resources/factomDid.json');
+const factomDid = require('../resources/did/factomDid.json');
 const vc = require('vc-js');
 const {documentLoader} = require('./customDocumentLoader');
 const {v4: uuidv4} = require('uuid');
@@ -13,11 +15,22 @@ function idSecToBase58(idSec) {
     return base58.encode(pkBytes);
 }
 
+function generateNewFactomKeypair() {
+    const factomId = FactomIdentityLib.generateRandomIdentityKeyPair();
+    const privateKeyBase58 = idSecToBase58(factomId.secret);
+    const keyPair = sign.keyPair.fromSeed(base58.decode(privateKeyBase58));
+    return {idSec: factomId.secret, idPub: factomId.public, publicKeyBase58: base58.encode(keyPair.publicKey)}
+}
+
 function getFactomSuite() {
-    const privateKeyBase58 = idSecToBase58(identity.key_pairs[0].private_key);
+    return getFactomSuiteFrom(identity.did, identity.key_pairs[0].private_key)
+}
+
+function getFactomSuiteFrom(did, idSec) {
+    const privateKeyBase58 = idSecToBase58(idSec);
     const keyPair = sign.keyPair.fromSeed(base58.decode(privateKeyBase58));
     const key = {
-        id: `${identity.did}#key-0`,
+        id: `${did}#key-0`,
         type: 'Ed25519VerificationKey2018',
         controller: identity.did,
         publicKeyBase58: base58.encode(keyPair.publicKey),
@@ -30,7 +43,14 @@ function getFactomSuite() {
     });
 }
 
-function issueFactomCredential(credential) {
+function issueFactomCredential(credential, options) {
+    //verify options
+    if(options && (!options.did || !options.idSec)){
+        return new Promise((resolve, reject) => reject({
+            message: "Incorrect DID options supplied."
+        }));
+    }
+
     // check requirements
     if (credential.credentialSubject == null || credential.type == null || !Array.isArray(credential.type)) {
         console.log('Failed. Missing requirements.');
@@ -48,11 +68,18 @@ function issueFactomCredential(credential) {
         credential.issuanceDate = date + 'T' + time;
     }
 
-    if (credential.issuer !== factomDid.identity.did) {
+    // set correct issuer
+    if (options && options.did && (credential.issuer !== options.did)) {
+        credential.issuer = options.did;
+    } else if (credential.issuer !== factomDid.identity.did) {
         credential.issuer = factomDid.identity.did;
     }
     // Todo: Verify DID
-    return vc.issue({credential, suite: getFactomSuite(), documentLoader});
+    if (!options){
+        return vc.issue({credential, suite: getFactomSuite(), documentLoader});
+    }
+    return vc.issue({credential, suite: getFactomSuiteFrom(options.did, options.idSec), documentLoader});
+
 }
 
 function proveFactomPresentation(presentation) {
@@ -69,4 +96,10 @@ function composeFactomPresentation(verifiableCredential) {
     return vc.createPresentation({verifiableCredential, suite: getFactomSuite(), documentLoader, holder: identity.did});
 }
 
-module.exports = {issueFactomCredential, proveFactomPresentation, composeFactomPresentation};
+module.exports = {
+    issueFactomCredential,
+    proveFactomPresentation,
+    composeFactomPresentation,
+    generateNewFactomKeypair,
+    getFactomSuiteFrom
+};

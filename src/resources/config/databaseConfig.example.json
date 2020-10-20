@@ -1,0 +1,4 @@
+{
+  "dbUrl": "mongodb://<username>:<password>@127.0.0.1:27017/vc-http-api",
+  "encryptionSecret": "<encryption-secret>"
+}
