@@ -15,6 +15,10 @@ export default ({config}) => {
         });
 
     // register new user and did
+    if (! config.registrationActive){
+        return api;
+    }
+
     api.post('/register', async (req, res) => {
         const {username, password} = req.body;
         if (!username || !password) {

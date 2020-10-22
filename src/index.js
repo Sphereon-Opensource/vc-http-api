@@ -9,9 +9,6 @@ import config from './config.json';
 import passport from './middleware/passport';
 import initializeDb from './db';
 
-
-const util = require('util');
-
 let app = express();
 app.server = http.createServer(app);
 
