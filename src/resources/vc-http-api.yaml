@@ -1,4 +1,12 @@
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic
   schemas:
     Credential:
       description: A JSON-LD Verifiable Credential without a proof.
@@ -43,8 +51,6 @@ components:
       properties:
         credential:
           $ref: '#/components/schemas/Credential'
-        options:
-          $ref: '#/components/schemas/LinkedDataProofOptions'
       type: object
     IssueCredentialResponse:
       $ref: '#/components/schemas/VerifiableCredential'
@@ -287,6 +293,8 @@ components:
       example:
         username: <test-username>
         password: <test-password>
+        didOptions:
+          network: testnet
       properties:
         username:
           description: Name of the user to be registered
@@ -294,6 +302,16 @@ components:
         password:
           description: Password of the user to be registered
           type: string
+        didOptions:
+          description: Options for newly created DID.
+          type: object
+          properties:
+            network:
+              description: Network for newly registered DID. Must be testnet or mainnet.
+              type: string
+              enum:
+                - testnet
+                - mainnet
     RegisterResponse:
       additionalProperties: false
       description: Object containing resulting registration information.
@@ -321,6 +339,8 @@ paths:
     post:
       description: Issues a credential and returns it in the response body.
       operationId: issueCredential
+      security:
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -445,6 +465,24 @@ paths:
           description: error!
       summary: >-
         Registers a new user and creates a Factom DID for that user.
+      tags:
+        - Authentication
+  /auth/login:
+    post:
+      description: Login with basic authentication.
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
       tags:
         - Authentication
 servers:
