@@ -50,7 +50,7 @@ export default ({config}) => {
         if (!requestedIssuer) {
             return;
         }
-        console.log(`Issuing on DID: ${requestedIssuer}`);
+
         switch (requestedIssuer) {
             case factomDid.identity.did:
                 return issueFactomCredential(credential)
