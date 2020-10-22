@@ -78,7 +78,7 @@ export default ({config}) => {
     api.post('/composeAndIssueCredential', (req, res) => {
         // not yet implemented
 
-        res.send(req.params);
+        res.status(501).send({message: "Not yet implemented."});
     });
 
     return api;
