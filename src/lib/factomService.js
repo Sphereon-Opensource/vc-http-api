@@ -69,7 +69,7 @@ function issueFactomCredential(credential, options) {
     }
 
     // set correct issuer
-    if (options && options.did && (credential.issuer !== options.did)) {
+    if (options && credential.issuer !== options.did) {
         credential.issuer = options.did;
     } else if (credential.issuer !== factomDid.identity.did) {
         credential.issuer = factomDid.identity.did;
