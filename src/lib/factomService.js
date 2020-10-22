@@ -75,10 +75,8 @@ function issueFactomCredential(credential, options) {
         credential.issuer = factomDid.identity.did;
     }
     // Todo: Verify DID
-    if (!options){
-        return vc.issue({credential, suite: getFactomSuite(), documentLoader});
-    }
-    return vc.issue({credential, suite: getFactomSuiteFrom(options.did, options.idSec), documentLoader});
+    const suite = options ? getFactomSuiteFrom(options.did, options.idSec) : getFactomSuite();
+    return vc.issue({credential, suite, documentLoader});
 
 }
 
