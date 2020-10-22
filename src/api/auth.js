@@ -1,6 +1,6 @@
 import passport from 'passport';
 import {Router} from 'express';
-import {registerNewDid} from "../lib/registrarService";
+import {Network, registerNewDid} from "../lib/registrarService";
 import User from '../models/User';
 import factomService from '../lib/factomService';
 
@@ -15,12 +15,19 @@ export default ({config}) => {
         });
 
     // register new user and did
-    if (! config.registrationActive){
+    if (!config.registrationActive) {
         return api;
     }
 
     api.post('/register', async (req, res) => {
-        const {username, password} = req.body;
+        const {username, password, didOptions} = req.body;
+        const network = didOptions && didOptions.network ? didOptions.network : Network.TESTNET;
+        if (network !== Network.TESTNET && network !== Network.MAINNET) {
+            const message =
+                `Invalid network specified. Expected ${Network.MAINNET} or ${Network.TESTNET}, but got: ${network}`;
+            return res.status(400).send({message});
+        }
+
         if (!username || !password) {
             return res.status(400).send({message: "username and password needed to register"})
         }
@@ -28,7 +35,7 @@ export default ({config}) => {
             return res.status(400).send({message: "A user with that username already exists"});
         }
         const {publicKeyBase58, idSec} = factomService.generateNewFactomKeypair();
-        return registerNewDid(username, publicKeyBase58)
+        return registerNewDid(username, publicKeyBase58, network)
             .then(({didState}) => {
                 const user = new User({
                     username,

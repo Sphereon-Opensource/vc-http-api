@@ -3,7 +3,12 @@ import base58 from 'bs58';
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 
-function registerNewDid(username, publicKeyBase58) {
+const Network = Object.freeze({
+    TESTNET: 'testnet',
+    MAINNET: 'mainnet'
+})
+
+function registerNewDid(username, publicKeyBase58, network) {
     const registerUrl = `${registrar.url}/${driver.factom.registerEndpoint}?driverId=${driver.factom.id}`;
     const extIds = [
         crypto.createHash('sha256').update(Buffer.from(username)).digest('hex'),
@@ -14,6 +19,7 @@ function registerNewDid(username, publicKeyBase58) {
         options: {
             publicKeyBase58,
             extIds,
+            network,
         },
         didDocument: {},
         secret: {}
@@ -25,4 +31,4 @@ function registerNewDid(username, publicKeyBase58) {
     }).then(res => res.json());
 }
 
-export {registerNewDid};
+export {registerNewDid, Network};
