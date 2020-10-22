@@ -1,10 +1,10 @@
 {
   "registrar": {
-    "url": "http://localhost:9080"
+    "url": "https://uniregistrar.sphereon.io"
   },
   "driver": {
     "factom": {
-      "id": "uni-registrar-driver-did-nodejs-factom",
+      "id": "driver-did-nodejs-factom",
       "registerEndpoint": "1.0/register"
     }
   }
