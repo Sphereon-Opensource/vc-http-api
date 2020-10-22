@@ -38,6 +38,9 @@ function assertValidIssuanceCredential(credential) {
     if (!credential['@context']) {
         throw {code: 400, message: 'Credential must contain a context'};
     }
+    if(!credential.issuer){
+        throw {code:400, message: 'Credential must have an issuer'};
+    }
 }
 
 async function getRequestedIssuer(options) {
