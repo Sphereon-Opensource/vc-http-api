@@ -1,7 +1,7 @@
 import {getDidDocument} from './didDocumentService';
 
 const {extendContextLoader} = require('jsonld-signatures');
-const customContexts = require('../resources/customContexts');
+const customContexts = require('../resources/cache/customContexts.json');
 const {defaultDocumentLoader} = require('vc-js');
 const Promise = require('promise');
 const fetch = require('node-fetch');

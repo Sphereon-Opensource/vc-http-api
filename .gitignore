@@ -3,6 +3,8 @@
 /npm-debug.log
 /node_modules
 .DS_Store
-/src/resources/factomDid.json
+/src/resources/did/factomDid.json
+/src/resources/config/authConfig.json
+/src/resources/config/databaseConfig.json
 .idea
 .idea/**

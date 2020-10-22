@@ -1,0 +1,11 @@
+{
+  "registrar": {
+    "url": "https://uniregistrar.sphereon.io"
+  },
+  "driver": {
+    "factom": {
+      "id": "driver-did-nodejs-factom",
+      "registerEndpoint": "1.0/register"
+    }
+  }
+}

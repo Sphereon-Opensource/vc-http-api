@@ -1,13 +1,13 @@
 import http from 'http';
-import express, {response} from 'express';
+import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
-
-const util = require('util');
+import passport from './middleware/passport';
+import initializeDb from './db';
 
 let app = express();
 app.server = http.createServer(app);
@@ -26,6 +26,12 @@ app.use(bodyParser.json({
 
 // internal middleware
 app.use(middleware({config}));
+
+// database
+initializeDb();
+
+// authentication
+app.use(passport.initialize());
 
 // api router
 app.use('/services', api({config}));

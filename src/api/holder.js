@@ -1,10 +1,10 @@
 import {Router} from 'express';
 
 const {extractDidFromVerificationMethod} = require('../lib/didDocumentService');
-const veresOneDid = require('../resources/veresOneDid');
+const veresOneDid = require('../resources/did/veresOneDid.json');
 const {verifyCredentialStructure} = require('../lib/credentialService');
 const {proveFactomPresentation, composeFactomPresentation} = require('../lib/factomService');
-const factomDid = require('../resources/factomDid');
+const factomDid = require('../resources/did/factomDid.json');
 
 export default ({ config }) => {
     let api = Router();

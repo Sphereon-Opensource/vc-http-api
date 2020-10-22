@@ -1,6 +1,6 @@
 const {validateAssertionMethod} = require('./didDocumentService');
-const factomDid = require('../resources/factomDid');
-const veresOneDid = require('../resources/veresOneDid');
+const factomDid = require('../resources/did/factomDid.json');
+const veresOneDid = require('../resources/did/veresOneDid.json');
 const Promise = require('promise');
 
 const AllowedProofPurposes = Object.freeze(['assertionMethod']);
@@ -37,6 +37,9 @@ function assertValidIssuanceCredential(credential) {
     }
     if (!credential['@context']) {
         throw {code: 400, message: 'Credential must contain a context'};
+    }
+    if(!credential.issuer){
+        throw {code:400, message: 'Credential must have an issuer'};
     }
 }
 
