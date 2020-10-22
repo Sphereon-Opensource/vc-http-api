@@ -294,6 +294,15 @@ components:
         password:
           description: Password of the user to be registered
           type: string
+    RegisterResponse:
+      additionalProperties: false
+      description: Object containing resulting registration information.
+      example:
+        did: did:factom:testnet:12345
+      properties:
+        did:
+          description: DID resulting from registration and belonging to new user.
+          type: string
 info:
   contact:
     name: GitHub Source Code
@@ -425,6 +434,10 @@ paths:
         description: Parameters for registering a new user.
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
           description: success!
         '400':
           description: invalid input!
