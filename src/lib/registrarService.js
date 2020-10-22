@@ -27,6 +27,9 @@ function registerNewDid(username, publicKeyBase58, network) {
 
     return fetch(registerUrl, {
         method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify(body),
     }).then(res => res.json());
 }
