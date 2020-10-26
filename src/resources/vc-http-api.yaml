@@ -321,6 +321,15 @@ components:
         did:
           description: DID resulting from registration and belonging to new user.
           type: string
+    LoginResponse:
+      additionalProperties: false
+      description: Object containing the Bearer token resulting from the login.
+      example:
+        token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRlbW8ifQ.2AZnQ4ICRK1-nhIdMaz0fGGOLqnR0RPZ8e6f5XdavGE
+      properties:
+        token:
+          description: Bearer token for authenticaiton with issuer endpoints.
+          type: string
 info:
   contact:
     name: GitHub Source Code
@@ -363,7 +372,9 @@ paths:
         - Issuer
   /prove/presentations:
     post:
-      description: Proves a presentation and returns it in the response body.
+      description: >
+        Proves a presentation and returns it in the response body. The current implementation will only provide
+        a valid example presentation based on a static DID.
       operationId: provePresentation
       requestBody:
         content:
@@ -477,7 +488,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterResponse'
+                $ref: '#/components/schemas/LoginResponse'
           description: success!
         '400':
           description: invalid input!
