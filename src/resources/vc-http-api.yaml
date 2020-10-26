@@ -271,8 +271,6 @@ components:
       type: object
     VerifyCredentialRequest:
       properties:
-        options:
-          $ref: '#/components/schemas/LinkedDataProofOptions'
         verifiableCredential:
           $ref: '#/components/schemas/VerifiableCredential'
       type: object
