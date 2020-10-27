@@ -1,6 +1,6 @@
 import passport from 'passport';
 import {Router} from 'express';
-import {Network, registerNewDid} from "../lib/registrarService";
+import {DidMethods, Network, registerNewDid} from "../lib/registrarService";
 import User from '../models/User';
 import factomService from '../lib/factomService';
 
@@ -25,6 +25,12 @@ export default ({config}) => {
         if (network !== Network.TESTNET && network !== Network.MAINNET) {
             const message =
                 `Invalid network specified. Expected ${Network.MAINNET} or ${Network.TESTNET}, but got: ${network}`;
+            return res.status(400).send({message});
+        }
+
+        if (didOptions.didMethod && Object.values(DidMethods).includes(options.didMethod)) {
+            const message = `Unsupported DID method provided. Recieved : ${options.didMethod},
+                 Expected one of: ${Object.values(DidMethods)}`;
             return res.status(400).send({message});
         }
 

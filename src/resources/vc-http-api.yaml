@@ -456,6 +456,7 @@ components:
         username: <test-username>
         password: <test-password>
         didOptions:
+          didMethod: factom
           network: testnet
       properties:
         username:
@@ -468,12 +469,14 @@ components:
           description: Options for newly created DID.
           type: object
           properties:
-            network:
-              description: Network for newly registered DID. Must be testnet or mainnet.
+            didMethod:
+              description: The DID method for the newly created DID. Currently only "factom" supported.
               type: string
               enum:
-                - testnet
-                - mainnet
+                - factom
+            network:
+              description: Network for newly registered DID. Currently "testnet" and "mainnet" are supported for Factom.
+              type: string
     RegisterResponse:
       additionalProperties: false
       description: Object containing resulting registration information.
