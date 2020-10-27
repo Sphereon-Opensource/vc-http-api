@@ -1,6 +1,6 @@
 import passport from 'passport';
 import {Router} from 'express';
-import {Network, registerNewDid} from "../lib/registrarService";
+import {DidMethods, Network, registerNewDid} from "../lib/registrarService";
 import User from '../models/User';
 import factomService from '../lib/factomService';
 
@@ -28,6 +28,12 @@ export default ({config}) => {
             return res.status(400).send({message});
         }
 
+        if (didOptions.didMethod && Object.values(DidMethods).includes(options.didMethod)) {
+            const message = `Unsupported DID method provided. Recieved : ${options.didMethod},
+                 Expected one of: ${Object.values(DidMethods)}`;
+            return res.status(400).send({message});
+        }
+
         if (!username || !password) {
             return res.status(400).send({message: "username and password needed to register"})
         }
@@ -44,8 +50,10 @@ export default ({config}) => {
                     idSec,
                 });
                 return user.save()
-                    .then(() => res.status(200).send({did: didState.identifier}))
-                    .catch(() =>
+                    .then(() => res.status(200).send({
+                        did: didState.identifier,
+                        username,
+                    })).catch(() =>
                         res.status(500).send({message: 'Could not create new user'})
                     );
             }).catch(() =>

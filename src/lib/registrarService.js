@@ -6,6 +6,10 @@ import fetch from 'node-fetch';
 const Network = Object.freeze({
     TESTNET: 'testnet',
     MAINNET: 'mainnet'
+});
+
+const DidMethods = Object.freeze({
+    FACTOM: 'factom',
 })
 
 function registerNewDid(username, publicKeyBase58, network) {
@@ -34,4 +38,4 @@ function registerNewDid(username, publicKeyBase58, network) {
     }).then(res => res.json());
 }
 
-export {registerNewDid, Network};
+export {registerNewDid, Network, DidMethods};
