@@ -28,8 +28,8 @@ export default ({config}) => {
             return res.status(400).send({message});
         }
 
-        if (didOptions.didMethod && Object.values(DidMethods).includes(options.didMethod)) {
-            const message = `Unsupported DID method provided. Recieved : ${options.didMethod},
+        if (didOptions.didMethod && !Object.values(DidMethods).includes(didOptions.didMethod)) {
+            const message = `Unsupported DID method provided. Received : ${didOptions.didMethod},
                  Expected one of: ${Object.values(DidMethods)}`;
             return res.status(400).send({message});
         }
