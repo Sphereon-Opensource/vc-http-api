@@ -36,7 +36,7 @@ initializeDb();
 app.use(passport.initialize());
 
 // swagget ui
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/resources/vc-http-api.yaml')));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/resources/vc-http-api.yaml')));
 
 // api router
 app.use('/services', api({config}));
