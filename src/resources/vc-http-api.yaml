@@ -16,8 +16,8 @@ tags:
     description: APIs for Verifiers.
   - name: Holder
     description: Optional APIs for Holders.
-  - name: Authentication
-    description: Authentication APIs for Issuers
+  - name: Auth
+    description: Auth APIs for Issuers
 servers:
   - url: /services/
 paths:
@@ -144,7 +144,7 @@ paths:
       summary: >-
         Registers a new user and creates a Factom DID for that user.
       tags:
-        - Authentication
+        - Auth
   /auth/login:
     post:
       description: Login with basic authentication.
@@ -162,7 +162,7 @@ paths:
         '500':
           description: error!
       tags:
-        - Authentication
+        - Auth
 
 components:
   securitySchemes:
