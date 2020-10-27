@@ -44,8 +44,10 @@ export default ({config}) => {
                     idSec,
                 });
                 return user.save()
-                    .then(() => res.status(200).send({did: didState.identifier}))
-                    .catch(() =>
+                    .then(() => res.status(200).send({
+                        did: didState.identifier,
+                        username,
+                    })).catch(() =>
                         res.status(500).send({message: 'Could not create new user'})
                     );
             }).catch(() =>

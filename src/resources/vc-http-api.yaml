@@ -478,8 +478,12 @@ components:
       additionalProperties: false
       description: Object containing resulting registration information.
       example:
+        username: example-user
         did: did:factom:testnet:12345
       properties:
+        username:
+          description: The username under which the new user is registered.
+          type: string
         did:
           description: DID resulting from registration and belonging to new user.
           type: string
