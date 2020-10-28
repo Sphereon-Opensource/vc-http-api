@@ -1,10 +1,10 @@
-FROM node:13-alpine
+FROM node:12.19.0
 
 # File Author / Maintainer
 LABEL authors="Scott Malley <smalley@sphereon.com>"
 
 # Update & install required packages
-RUN apk add --update nodejs bash git libc6-compat
+RUN apt-get install bash git
 
 # Install app dependencies
 COPY package.json /www/package.json

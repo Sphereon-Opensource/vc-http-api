@@ -28,6 +28,8 @@ paths:
       summary: Issues a credential and returns it in the response body.
       operationId: issueCredential
       description: Issues a credential and returns it in the response body.
+      security:
+        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -123,7 +125,7 @@ paths:
     post:
       description: >-
         Create a new issuer user.
-      operationId: login
+      operationId: register
       requestBody:
         content:
           application/json:
