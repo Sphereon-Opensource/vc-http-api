@@ -160,6 +160,29 @@ paths:
           description: error!
       tags:
         - Revocation
+  /revocation/init:
+    post:
+      description: Create the initial revocation credential in the configured hosting location.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevocationInitRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationInitResponse'
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
   /auth/register:
     post:
       description: >-
@@ -584,4 +607,23 @@ components:
           type: string
         path:
           description: The path to the jsonld credential file to update. Default is 'revocation-credential.jsonld'
+          type: string
+    RevocationInitRequest:
+      additionalProperties: false
+      description: Object containing revocation credential initialization parameters.
+      example:
+        listSize: 1000000
+      properties:
+        listSize:
+          description: >
+            Length of revocation list. The maximum number of credentials that can be given status by this list.
+          type: number
+    RevocationInitResponse:
+      additionalProperties: false
+      description: Object containing revocation credential initialization result.
+      example:
+        url: https://example.com/revocation-credential.jsonld
+      properties:
+        url:
+          description: URL of the deployed revocation credential.
           type: string

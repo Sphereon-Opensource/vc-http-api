@@ -2,20 +2,32 @@ import GitHubApi from 'github-api';
 import Promise from 'promise';
 import InvalidGitHubOptions from "../../error/InvalidGitHubOptions";
 
+const DEFAULT_PATH = 'revocation-credential.jsonld';
+const DEFAULT_BRANCH = 'master';
+
 const publish = ({token, owner, repo, branch, path, content}) => {
+    const commitPath = path || DEFAULT_PATH;
+    const commitBranch = branch || DEFAULT_BRANCH;
+
     const github = new GitHubApi({token});
     const repository = github.getRepo(owner, repo);
     const commitMessage = `Revocation update: ${new Date()}`;
-    return repository.writeFile(
-        branch,
-        path,
-        content,
-        commitMessage,
-        function (err) {
-            console.log(err);
-        }
-    );
-}
+
+    return new Promise((resolve, reject) => {
+        return repository.writeFile(
+            commitBranch,
+            commitPath,
+            JSON.stringify(content, null, 2),
+            commitMessage,
+            function (err) {
+                if (!err) {
+                    return resolve(_getGitHubUrl(owner, repo, commitPath));
+                }
+                reject(err);
+            }
+        );
+    });
+};
 
 const validateGitHubOptions = gitHubOptions => {
     return new Promise((resolve, reject) => {
@@ -49,6 +61,11 @@ const validateGitHubOptions = gitHubOptions => {
             });
     });
 };
+
+const _getGitHubUrl = (owner, repo, path) => {
+    return `https://${owner.toLowerCase()}.github.io/${repo.toLowerCase()}/${path}`;
+};
+
 
 export default {publish, validateGitHubOptions};
 

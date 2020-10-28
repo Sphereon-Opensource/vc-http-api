@@ -45,7 +45,7 @@ function getFactomSuiteFrom(did, idSec) {
 
 function issueFactomCredential(credential, options) {
     //verify options
-    if(options && (!options.did || !options.idSec)){
+    if (options && (!options.did || !options.idSec)) {
         return new Promise((resolve, reject) => reject({
             message: "Incorrect DID options supplied."
         }));
@@ -69,11 +69,8 @@ function issueFactomCredential(credential, options) {
     }
 
     // set correct issuer
-    if (options && credential.issuer !== options.did) {
-        credential.issuer = options.did;
-    } else if (credential.issuer !== factomDid.identity.did) {
-        credential.issuer = factomDid.identity.did;
-    }
+    credential.issuer = _getCorrectIssuer(credential, options);
+
     // Todo: Verify DID
     const suite = options ? getFactomSuiteFrom(options.did, options.idSec) : getFactomSuite();
     return vc.issue({credential, suite, documentLoader});
@@ -92,6 +89,13 @@ function proveFactomPresentation(presentation) {
 
 function composeFactomPresentation(verifiableCredential) {
     return vc.createPresentation({verifiableCredential, suite: getFactomSuite(), documentLoader, holder: identity.did});
+}
+
+function _getCorrectIssuer(credential, options) {
+    if (options && options.did) {
+        return options.did;
+    }
+    return factomDid.identity.did;
 }
 
 module.exports = {
