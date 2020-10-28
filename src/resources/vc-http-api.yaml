@@ -16,6 +16,8 @@ tags:
     description: APIs for Verifiers.
   - name: Holder
     description: Optional APIs for Holders.
+  - name: Revocation
+    description: APIs for credential revocation.
   - name: Auth
     description: Auth APIs for Issuers
 servers:
@@ -121,6 +123,43 @@ paths:
           description: invalid input!
         "500":
           description: error!
+  /revocation/config:
+    post:
+      description: Create a new revocation publishing config
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevocationConfig"
+        description: Configuration for publishing a revocation credential
+      responses:
+        '200':
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
+    get:
+      description: Get the revocation publishing config for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationConfig'
+          description: success!
+        '404':
+          description: Could not find config for authenticated user.
+        '500':
+          description: error!
+      tags:
+        - Revocation
   /auth/register:
     post:
       description: >-
@@ -500,4 +539,49 @@ components:
       properties:
         token:
           description: Bearer token for authenticaiton with issuer endpoints.
+          type: string
+    RevocationConfig:
+      additionalProperties: false
+      description: Configuration for publishing a RevocationList credential
+      example:
+        publishMethod: github
+        gitHubOptions:
+          token: <github-access-token>
+          owner: Organization
+          repo: RepositoryName
+          branch: Branch
+          path: revocation-credential.jsonld
+      properties:
+        publishMethod:
+          description: Method used to publish and update RevocationList credentials
+          type: string
+          enum:
+            - github
+            - hosted
+        gitHubOptions:
+          $ref: "#/components/schemas/GitHubOptions"
+    GitHubOptions:
+      additionalProperties: false
+      description: Configuration options for publishing to GitHub
+      example:
+        token: <github-access-token>
+        owner: Organization
+        repo: RepositoryName
+        branch: Branch
+        path: revocation-credential.jsonld
+      properties:
+        token:
+          description: GitHub access token with write permissions to the selected repository
+          type: string
+        owner:
+          description: Owner/Organization who controls the git repository
+          type: string
+        repo:
+          description: Name of the git repository
+          type: string
+        branch:
+          description: The branch on which to commit updates. Default is 'master'.
+          type: string
+        path:
+          description: The path to the jsonld credential file to update. Default is 'revocation-credential.jsonld'
           type: string

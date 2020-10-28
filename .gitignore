@@ -6,5 +6,6 @@
 /src/resources/did/factomDid.json
 /src/resources/config/authConfig.json
 /src/resources/config/databaseConfig.json
+/src/resources/config/databaseConfig.prod.json
 .idea
 .idea/**

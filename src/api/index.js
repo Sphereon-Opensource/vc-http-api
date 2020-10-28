@@ -3,6 +3,7 @@ import passport from 'passport';
 import issuer from './issuer';
 import verifier from './verifier';
 import holder from './holder';
+import revocation from "./revocation";
 import auth from './auth';
 import apiInfo from '../resources/apiInfo';
 
@@ -18,6 +19,9 @@ export default ({config}) => {
 
     // mount the holder resource
     api.use('/prove', holder({config}));
+
+    // mount the revocation resource
+    api.use('/revocation', passport.authenticate('bearer', {session: false}), revocation({config}));
 
     // mount authentication resource
     api.use('/auth', auth({config}));
