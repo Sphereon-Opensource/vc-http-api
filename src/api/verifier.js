@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {handleVerificationError} from '../lib/util';
 
-const {verifyCredential, verifyPresentation} = require('../lib/verificationService');
+import {verifyCredential, verifyPresentation} from '../lib/verificationService';
 const {verifyCredentialStructure} = require('../lib/credentialService');
 
 export default ({ config }) => {

@@ -1,6 +1,7 @@
 import GitHubApi from 'github-api';
 import Promise from 'promise';
 import InvalidRevocationOptions from "../../error/InvalidRevocationOptions";
+import CredentialLoadError from "../../error/CredentialLoadError";
 
 const DEFAULT_PATH = 'revocation-credential.jsonld';
 const DEFAULT_BRANCH = 'master';
@@ -62,10 +63,31 @@ const validateGitHubOptions = gitHubOptions => {
     });
 };
 
+const getRevocationCredential = ({token, owner, repo, branch, path}) => {
+    const credentialPath = path || DEFAULT_PATH;
+    const credentialBranch = branch || DEFAULT_BRANCH;
+
+    const github = new GitHubApi({token});
+    const repository = github.getRepo(owner, repo);
+
+    return repository.getContents(credentialBranch, credentialPath)
+        .then(response => {
+            return JSON.parse(Buffer.from(response.data.content, 'base64').toString('utf-8'));
+        }).catch(err => {
+            if (err instanceof SyntaxError) {
+                const message = `Could not parse credential from (repo, branch, path): 
+                (${repo}, ${credentialBranch}, ${path}). Originating error: ${err.message}`;
+                throw new CredentialLoadError(message);
+            }
+            const message = `Could not load credential from (repo, branch, path):
+            (${repo}, ${credentialBranch}, ${path}). Originating error: ${err.message}`;
+            throw new CredentialLoadError(message);
+        });
+};
+
 const _getGitHubUrl = (owner, repo, path) => {
     return `https://${owner.toLowerCase()}.github.io/${repo.toLowerCase()}/${path}`;
 };
 
 
-export default {publish, validateGitHubOptions};
-
+export default {publish, validateGitHubOptions, getRevocationCredential};

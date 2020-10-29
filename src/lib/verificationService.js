@@ -1,3 +1,5 @@
+import {verifyCredentialWithRevocation} from "./revocation";
+
 const {getDidDocument} = require('./didDocumentService');
 const {extractDidFromVerificationMethod} = require('./didDocumentService');
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
@@ -16,11 +18,18 @@ function verifyCredential(verifiableCredential) {
             verificationMethod: key.id,
             key: importKey,
         });
-        return vc.verifyCredential({credential: verifiableCredential, suite, documentLoader});
+        if(!verifiableCredential.credentialStatus){
+            return vc.verifyCredential({credential: verifiableCredential, suite, documentLoader});
+        }
+        return verifyCredentialWithRevocation(verifiableCredential);
     }).then(result => {
         if (result.verified) {
+            let checks = ['proof'];
+            if(result.revocation){
+                checks = [...checks, 'revocation']
+            }
             return {
-                checks: ['proof'],
+                checks,
                 warnings: [],
                 errors: [],
             };
@@ -108,4 +117,4 @@ function getKeyForVerificationMethod(verificationMethod, didDocument) {
     throw {code: 400, message: 'Could not find verification method in DID document'};
 }
 
-module.exports = {verifyCredential, verifyPresentation};
+export {verifyCredential, verifyPresentation, getSuite};

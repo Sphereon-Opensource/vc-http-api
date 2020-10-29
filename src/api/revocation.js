@@ -1,41 +1,32 @@
 import {Router} from "express";
-import {PublishMethod, publishing, createRevocationCredential, publishRevocationCredential} from "../lib/revocation";
-import InvalidRequestError from "../lib/error/InvalidRequestError";
+import {
+    createRevocationCredential,
+    getRevocationCredential,
+    publishRevocationCredential,
+    updateRevocationCredential, validateRevocationConfig
+} from "../lib/revocation";
 import {issueFactomCredential} from "../lib/factomService";
+import {handleErrorResponse} from "../lib/util";
 
 export default ({config}) => {
     let api = Router();
 
     api.post('/config', async (req, res) => {
-            const {publishMethod, gitHubOptions, hostedOptions} = req.body;
+            const revocationConfig = req.body;
             const user = req.user;
             try {
-                switch (publishMethod) {
-                    case PublishMethod.GITHUB:
-                        await publishing.github.validateGitHubOptions(gitHubOptions);
-                        break;
-                    case PublishMethod.HOSTED:
-                        await publishing.hosted.validateHostedOptions(hostedOptions);
-                        break;
-                    default:
-                        const message = `Invalid publishMethod. Expected one of ${Object.values(PublishMethod)} 
-                        but got: ${publishMethod}`;
-                        throw new InvalidRequestError(message);
-                }
+                await validateRevocationConfig(revocationConfig);
             } catch (err) {
-                if (err instanceof InvalidRequestError) {
-                    return res.status(400).send({message: err.message});
-                }
-                return res.status(500).send({message: err.message});
+                return handleErrorResponse(res, err);
             }
-
-            user.revocationConfig = {
-                publishMethod,
-                gitHubOptions,
-                hostedOptions
-            };
+            user.revocationConfig = revocationConfig;
             return user.save()
-                .then(() => res.status(200).send());
+                .then(() => res.status(200).send())
+                .catch(err => {
+                    const message = `Could not save revocation config to authenticated user. 
+                    Originating message: ${err.message}`;
+                    res.status(500).send({message});
+                });
         }
     );
 
@@ -71,13 +62,24 @@ export default ({config}) => {
                 return user.save()
                     .then(() => res.status(200).send({url}));
             })
-            .catch(err => {
-                if (err instanceof InvalidRequestError) {
-                    res.status(400).send({message: err.message});
-                }
-                res.status(500).send({message: err.message});
-            });
+            .catch(err => handleErrorResponse(res, err));
 
+    });
+
+    api.post('/revoke', (req, res) => {
+        const {user, revocationIndex} = req;
+        const {revocationConfig} = user;
+        if (!revocationConfig) {
+            const message = "Revocation not configured for authenticated user."
+            res.status(400).send({message});
+        }
+        if (!revocationConfig.url) {
+            const message = "Revocation credential not initialized.";
+            res.status(400).send({message})
+        }
+        return getRevocationCredential(revocationConfig)
+            .then(rvc => updateRevocationCredential(rvc, revocationIndex, true))
+            .catch(err => handleErrorResponse(res, err));
     });
 
     return api;

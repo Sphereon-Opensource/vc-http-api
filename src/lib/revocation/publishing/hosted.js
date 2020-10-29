@@ -3,6 +3,7 @@ import Credential from '../../../models/Credential';
 import {baseUrl} from '../../../config.json';
 import ResourceConflictError from "../../error/ResourceConflictError";
 import InvalidRevocationOptions from "../../error/InvalidRevocationOptions";
+import ResourceNotFoundError from "../../error/ResourceNotFoundError";
 
 const publish = ({credentialId, content}) => {
     return new Promise((resolve, reject) => {
@@ -19,6 +20,20 @@ const publish = ({credentialId, content}) => {
         });
     })
 };
+
+const getRevocationCredential = ({credentialId}) => {
+    return new Promise(((resolve, reject) => {
+        Credential.findOne({id: credentialId}, (err, doc) => {
+           if(err || !doc){
+               const message = `Could not retrieve revocation credential with id: ${credentialId}.
+               Originating error: ${err.message}`;
+               reject(new ResourceNotFoundError(message));
+           }
+           return doc.credential;
+        });
+    }));
+
+}
 
 const validateHostedOptions = ({credentialId}) => {
     return new Promise((resolve, reject) => {
@@ -38,4 +53,4 @@ const _getHostedUrl = credentialId => {
     return `${baseUrl}/services/credentials/${credentialId}/revocation-credential.jsonld`;
 };
 
-export default {publish, validateHostedOptions};
+export default {publish, validateHostedOptions, getRevocationCredential};
