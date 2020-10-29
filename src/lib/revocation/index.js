@@ -1,7 +1,6 @@
-import publish from './publish';
 import {createList} from 'vc-revocation-list';
 import Promise from 'promise';
-import github from "./publish/github";
+import publishing from "./publishing";
 import RevocationPublishError from "../error/RevocationPublishError";
 
 const PublishMethod = Object.freeze({
@@ -28,7 +27,9 @@ const createRevocationCredential = async (listSize, issuer) => {
 const publishRevocationCredential = (rc, revocationConfig) => {
     switch (revocationConfig.publishMethod) {
         case PublishMethod.GITHUB:
-            return github.publish({...revocationConfig.gitHubOptions, content: rc});
+            return publishing.github.publish({...revocationConfig.gitHubOptions, content: rc});
+        case PublishMethod.HOSTED:
+            return publishing.hosted.publish({...revocationConfig.hostedOptions, content: rc});
         default:
             return new Promise((_, reject) => reject(
                 new RevocationPublishError(`Invalid publishMethod saved in config.
@@ -38,7 +39,7 @@ const publishRevocationCredential = (rc, revocationConfig) => {
 };
 
 export {
-    publish,
+    publishing,
     PublishMethod,
     createRevocationCredential,
     publishRevocationCredential,

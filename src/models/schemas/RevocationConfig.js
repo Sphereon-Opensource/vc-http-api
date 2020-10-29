@@ -12,8 +12,13 @@ export default new Schema({
             owner:{type: String, required: true},
             repo: {type: String, required: true},
             branch: {type: String, required: false},
-            path: {type: String, required: false}
+            path: {type: String, required: false},
         },
         required: false,
     },
+    hostedOptions: {
+      type: {credentialId: {type: String, required: true}},
+      required: false,
+    },
+    url: {type: String, required: false},
 });

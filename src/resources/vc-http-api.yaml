@@ -583,6 +583,17 @@ components:
             - hosted
         gitHubOptions:
           $ref: "#/components/schemas/GitHubOptions"
+        hostedOptions:
+          $ref: '#/components/schemas/HostedOptions'
+    HostedOptions:
+      additionalProperties: false
+      description: Object containing options for hosting the revocation credential on the vc-http-api
+      example:
+        credentialId: 'f0a910f8-697d-4f4e-83c4-ea06e54aa094'
+      properties:
+        credentialId:
+          description: Id under which to store the revoked credential. Must be unique.
+          type: string
     GitHubOptions:
       additionalProperties: false
       description: Configuration options for publishing to GitHub
