@@ -1,10 +1,13 @@
 import {assertRevocationList2020Context, checkStatus, createList, decodeList} from 'vc-revocation-list';
+import vcjs from 'vc-js';
 import Promise from 'promise';
 import publishing from "./publishing";
 import {documentLoader} from '../customDocumentLoader';
 import RevocationPublishError from "../error/RevocationPublishError";
 import InvalidRequestError from "../error/InvalidRequestError";
 import {getSuite} from "../verificationService";
+import ResourceNotFoundError from "../error/ResourceNotFoundError";
+import CredentialLoadError from "../error/CredentialLoadError";
 
 const PublishMethod = Object.freeze({
     HOSTED: 'hosted',
@@ -68,16 +71,18 @@ const updateRevocationCredential = async (rvc, revocationIndex, revoked) => {
 };
 
 const verifyCredentialWithRevocation = async vc => {
-    const vcSuite = getSuite(vc.proof);
+    const vcSuite = await getSuite(vc.proof);
     const rvc = await _loadRevocationListCredential(vc);
-    const rvcSuite = getSuite(rvc.proof);
-    return checkStatus({credential: vc, documentLoader, suite: [vcSuite, rvcSuite], verifyRevocationListCredential: false})
-        .then(res => {
-            if(res.verified){
-                return {...res, revocation: true};
-            }
-            return res;
-        });
+    const rvcSuite = await getSuite(rvc.proof);
+    return Promise.all([
+        checkStatus({credential: vc, documentLoader, suite: vcSuite, verifyRevocationListCredential: false}),
+        vcjs.verifyCredential({credential: rvc, documentLoader, suite: rvcSuite})
+    ]).then(([vcRes, rvcRes]) => {
+        if (vcRes.verified && rvcRes.verified) {
+            return {...rvcRes, revocation: true};
+        }
+        return {...vcRes};
+    });
 };
 
 const _createRevocationListCredential = async ({issuer, issuanceDate}, list) => {
@@ -96,11 +101,24 @@ const _createRevocationListCredential = async ({issuer, issuanceDate}, list) => 
 };
 
 const _loadRevocationListCredential = vc => {
-    if(!vc || !vc.credentialStatus || !vc.credentialStatus.revocationListCredential){
+    if (!vc || !vc.credentialStatus || !vc.credentialStatus.revocationListCredential) {
         throw new Error('Supplied VC is not a RevocationList2020 credential.');
     }
-    return documentLoader(vc.credentialStatus.revocationListCredential)
-        .then(res => res.document);
+    const rvcUrl = vc.credentialStatus.revocationListCredential;
+    return documentLoader(rvcUrl)
+        .then(res => {
+            const rvc = res.document;
+            if(!rvc.proof){
+                const message = `Revocation credential has no proof object at URL: ${rvcUrl}`;
+                throw new CredentialLoadError(message);
+            }
+            return rvc;
+        })
+        .catch(err => {
+            const message = `Could not resolve url for revocation credential. 
+            Provided: ${vc.credentialStatus.revocationListCredential}. Originating error: ${err.message}`;
+            throw new ResourceNotFoundError(message);
+        });
 };
 
 export {

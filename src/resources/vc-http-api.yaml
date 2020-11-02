@@ -183,6 +183,25 @@ paths:
           description: error!
       tags:
         - Revocation
+  /revocation/update:
+    post:
+      description: Update the revocation status of a specific revocation list index.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevocationUpdateRequest'
+      responses:
+        '200':
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
   /auth/register:
     post:
       description: >-
@@ -638,3 +657,16 @@ components:
         url:
           description: URL of the deployed revocation credential.
           type: string
+    RevocationUpdateRequest:
+      additionalProperties: false
+      description: Object describing the update to make on the revocation credential
+      example:
+        revocationIndex: 10
+        revoked: true
+      properties:
+        revocationIndex:
+          description: Index in the revocation list to be updated
+          type: number
+        revoked:
+          description: Boolean describing wether the credential at that index has been revoked or not
+          type: boolean

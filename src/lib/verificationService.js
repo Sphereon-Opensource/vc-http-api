@@ -1,4 +1,5 @@
-import {verifyCredentialWithRevocation} from "./revocation";
+import {publishRevocationCredential, verifyCredentialWithRevocation} from "./revocation";
+import revocation from "../api/revocation";
 
 const {getDidDocument} = require('./didDocumentService');
 const {extractDidFromVerificationMethod} = require('./didDocumentService');
@@ -6,40 +7,27 @@ const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatu
 const {documentLoader} = require('./customDocumentLoader');
 const vc = require('vc-js');
 
-function verifyCredential(verifiableCredential) {
-    const {proof} = verifiableCredential;
-    const {verificationMethod} = proof;
-    const did = extractDidFromVerificationMethod(verificationMethod);
-    //attempt to fetch did document
-    return getDidDocument(did).then(didDocument => {
-        const key = getKeyForVerificationMethod(verificationMethod, didDocument);
-        const importKey = new Ed25519KeyPair({...key});
-        const suite = new Ed25519Signature2018({
-            verificationMethod: key.id,
-            key: importKey,
-        });
-        if(!verifiableCredential.credentialStatus){
-            return vc.verifyCredential({credential: verifiableCredential, suite, documentLoader});
-        }
-        return verifyCredentialWithRevocation(verifiableCredential);
-    }).then(result => {
-        if (result.verified) {
-            let checks = ['proof'];
-            if(result.revocation){
-                checks = [...checks, 'revocation']
+async function verifyCredential(verifiableCredential) {
+    const verify = await _getVerificationFunction(verifiableCredential);
+
+    return verify(verifiableCredential)
+        .then(result => {
+            if (result.verified) {
+                let checks = ['proof'];
+                if (result.revocation) {
+                    checks = [...checks, 'revocation']
+                }
+                return {
+                    checks,
+                    warnings: [],
+                    errors: [],
+                };
             }
-            return {
-                checks,
-                warnings: [],
-                errors: [],
-            };
-        } else {
             if (result.error) {
                 throw result.error;
             }
             throw {code: 500, message: 'Could not verify.'};
-        }
-    });
+        });
 }
 
 async function getSuite(proof) {
@@ -63,10 +51,16 @@ async function verifyPresentation(verifiablePresentation, challenge) {
     //attempt to fetch did document for credentials
     const {verifiableCredential} = verifiablePresentation;
     let credentialSuites = [];
+    let revocationChecks = [];
     if (verifiableCredential && Array.isArray(verifiableCredential)) {
         credentialSuites = await Promise.all(verifiableCredential
             .filter(vc => !!vc.proof)
             .map(vc => getSuite(vc.proof)));
+        revocationChecks = await Promise.all(
+            verifiableCredential
+                .filter(vc => !!vc.credentialStatus)
+                .map(vc => verifyCredentialWithRevocation(vc))
+        );
     }
 
     //attempt to fetch did document for presentation
@@ -77,9 +71,13 @@ async function verifyPresentation(verifiablePresentation, challenge) {
         documentLoader,
         challenge
     }).then(result => {
+        let checks = ['proof'];
+        if (revocationChecks.every(result => result.revocation)) {
+            checks = [...checks, 'revocation']
+        }
         if (result.verified) {
             return {
-                checks: ['proof'],
+                checks,
                 warnings: [],
                 errors: [],
             };
@@ -115,6 +113,15 @@ function getKeyForVerificationMethod(verificationMethod, didDocument) {
         }
     }
     throw {code: 400, message: 'Could not find verification method in DID document'};
+}
+
+const _getVerificationFunction = async (vc) => {
+    if (vc.credentialStatus) {
+        return new Promise(resolve => resolve(verifyCredentialWithRevocation));
+    }
+    const {proof} = vc;
+    const suite = await getSuite(proof);
+    return credential => vc.verifyCredential({credential, suite, documentLoader});
 }
 
 export {verifyCredential, verifyPresentation, getSuite};

@@ -66,9 +66,10 @@ export default ({config}) => {
 
     });
 
-    api.post('/revoke', (req, res) => {
-        const {user, revocationIndex} = req;
-        const {revocationConfig} = user;
+    api.post('/update', (req, res) => {
+        const {user, body} = req;
+        const {revocationIndex, revoked} = body;
+        const {revocationConfig, did, idSec} = user;
         if (!revocationConfig) {
             const message = "Revocation not configured for authenticated user."
             res.status(400).send({message});
@@ -78,9 +79,11 @@ export default ({config}) => {
             res.status(400).send({message})
         }
         return getRevocationCredential(revocationConfig)
-            .then(rvc => updateRevocationCredential(rvc, revocationIndex, true))
+            .then(rvc => updateRevocationCredential(rvc, revocationIndex, revoked))
+            .then(updatedRc => issueFactomCredential(updatedRc, {did, idSec}))
+            .then(updatedRvc => publishRevocationCredential(updatedRvc, revocationConfig))
+            .then(() => res.status(200).send())
             .catch(err => handleErrorResponse(res, err));
     });
-
     return api;
 };
