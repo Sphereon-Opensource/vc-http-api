@@ -8,6 +8,7 @@ import InvalidRequestError from "../error/InvalidRequestError";
 import {getSuite} from "../verificationService";
 import ResourceNotFoundError from "../error/ResourceNotFoundError";
 import CredentialLoadError from "../error/CredentialLoadError";
+import vc from "vc-js";
 
 const PublishMethod = Object.freeze({
     HOSTED: 'hosted',
@@ -100,6 +101,18 @@ const _createRevocationListCredential = async ({issuer, issuanceDate}, list) => 
     };
 };
 
+const checkRevocationStatus = async (rvc, index) =>{
+    const {credentialSubject: rl} = rvc;
+    const {encodedList} = rl;
+    let list;
+    try {
+        list = await decodeList({encodedList});
+    } catch(e) {
+        throw new Error(`Could not decode encoded revocation list; reason: ${e.message}`);
+    }
+    return list.isRevoked(index);
+}
+
 const _loadRevocationListCredential = vc => {
     if (!vc || !vc.credentialStatus || !vc.credentialStatus.revocationListCredential) {
         throw new Error('Supplied VC is not a RevocationList2020 credential.');
@@ -127,5 +140,6 @@ export {
     publishRevocationCredential,
     getRevocationCredential,
     updateRevocationCredential,
-    verifyCredentialWithRevocation
+    verifyCredentialWithRevocation,
+    checkRevocationStatus
 };

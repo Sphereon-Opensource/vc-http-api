@@ -202,6 +202,32 @@ paths:
           description: error!
       tags:
         - Revocation
+  /revocation/status/{index}:
+    get:
+      description: Get revocation status for a specific index.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: index
+          in: path
+          description: Revocation index
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationInitResponse'
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
   /auth/register:
     post:
       description: >-
@@ -669,4 +695,13 @@ components:
           type: number
         revoked:
           description: Boolean describing wether the credential at that index has been revoked or not
+          type: boolean
+    RevocationStatusResponse:
+      additionalProperties: false
+      description: Object containing the revocation status of the requested index
+      example:
+        revoked: true
+      properties:
+        revoked:
+          description: Boolean describing whether a credential has been revoked
           type: boolean

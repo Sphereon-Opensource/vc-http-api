@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {
+    checkRevocationStatus,
     createRevocationCredential,
     getRevocationCredential,
     publishRevocationCredential,
@@ -83,6 +84,31 @@ export default ({config}) => {
             .then(updatedRc => issueFactomCredential(updatedRc, {did, idSec}))
             .then(updatedRvc => publishRevocationCredential(updatedRvc, revocationConfig))
             .then(() => res.status(200).send())
+            .catch(err => handleErrorResponse(res, err));
+    });
+
+    api.get('/status/:index', (req, res) => {
+        const {index} = req.params;
+        const {user} = req;
+        const {revocationConfig} = user;
+        if (!revocationConfig) {
+            const message = "Revocation not configured for authenticated user."
+            res.status(400).send({message});
+        }
+        if (!revocationConfig.url) {
+            const message = "Revocation credential not initialized.";
+            res.status(400).send({message})
+        }
+        let revocationIndex;
+        try {
+            revocationIndex = parseInt(index);
+        } catch(err) {
+            const message = `Unable to parse ${index} to a non-zero integer.`
+            return res.status(400).send({message});
+        }
+        return getRevocationCredential(revocationConfig)
+            .then(rvc => checkRevocationStatus(rvc, revocationIndex))
+            .then(result => res.status(200).send({revoked: result}))
             .catch(err => handleErrorResponse(res, err));
     });
     return api;
