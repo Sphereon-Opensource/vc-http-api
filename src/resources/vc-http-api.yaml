@@ -123,9 +123,9 @@ paths:
           description: invalid input!
         "500":
           description: error!
-  /revocation/config:
+  /revocations:
     post:
-      description: Create a new revocation publishing config
+      description: Create a new revocation for the authenticated user
       security:
         - bearerAuth: []
       requestBody:
@@ -136,6 +136,10 @@ paths:
         description: Configuration for publishing a revocation credential
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationListResponse'
           description: success!
         '400':
           description: invalid input!
@@ -144,7 +148,7 @@ paths:
       tags:
         - Revocation
     get:
-      description: Get the revocation publishing config for the authenticated user
+      description: Get the revocations for the authenticated user
       security:
         - bearerAuth: []
       responses:
@@ -152,7 +156,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RevocationConfig'
+                $ref: '#/components/schemas/RevocationListArrayResponse'
           description: success!
         '404':
           description: Could not find config for authenticated user.
@@ -160,39 +164,55 @@ paths:
           description: error!
       tags:
         - Revocation
-  /revocation/init:
-    post:
-      description: Create the initial revocation credential in the configured hosting location.
+  /revocations/{id}:
+    get:
+      description: Get the parameters for a revocation configuration associated with the authenticated user
       security:
         - bearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RevocationInitRequest'
+      parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RevocationInitResponse'
+                $ref: '#/components/schemas/RevocationListResponse'
           description: success!
-        '400':
-          description: invalid input!
+        '404':
+          description: Could not find config for authenticated user.
         '500':
           description: error!
       tags:
         - Revocation
-  /revocation/update:
+  /revocations/{id}/list/{index}:
     post:
       description: Update the revocation status of a specific revocation list index.
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: path
+          description: Revocation index
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RevocationUpdateRequest'
+              $ref: '#/components/schemas/RevocationStatus'
       responses:
         '200':
           description: success!
@@ -202,12 +222,17 @@ paths:
           description: error!
       tags:
         - Revocation
-  /revocation/status/{index}:
     get:
       description: Get revocation status for a specific index.
       security:
         - bearerAuth: []
       parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
         - name: index
           in: path
           description: Revocation index
@@ -220,7 +245,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RevocationInitResponse'
+                $ref: '#/components/schemas/RevocationStatus'
           description: success!
         '400':
           description: invalid input!
@@ -608,10 +633,12 @@ components:
         token:
           description: Bearer token for authenticaiton with issuer endpoints.
           type: string
-    RevocationConfig:
+    RevocationListCreateRequest:
       additionalProperties: false
       description: Configuration for publishing a RevocationList credential
       example:
+        id: 8858b74c-564f-44d6-942a-06ee4e2f2944
+        listSize: 1000000
         publishMethod: github
         gitHubOptions:
           token: <github-access-token>
@@ -620,6 +647,12 @@ components:
           branch: Branch
           path: revocation-credential.jsonld
       properties:
+        id:
+          description: Identifier for the revocation list
+          type: string
+        listSize:
+          description: Size of the list for the associated revocation credential
+          type: number
         publishMethod:
           description: Method used to publish and update RevocationList credentials
           type: string
@@ -664,41 +697,41 @@ components:
         path:
           description: The path to the jsonld credential file to update. Default is 'revocation-credential.jsonld'
           type: string
-    RevocationInitRequest:
-      additionalProperties: false
-      description: Object containing revocation credential initialization parameters.
-      example:
-        listSize: 1000000
-      properties:
-        listSize:
-          description: >
-            Length of revocation list. The maximum number of credentials that can be given status by this list.
-          type: number
-    RevocationInitResponse:
+    RevocationListResponse:
       additionalProperties: false
       description: Object containing revocation credential initialization result.
       example:
         url: https://example.com/revocation-credential.jsonld
-      properties:
-        url:
-          description: URL of the deployed revocation credential.
-          type: string
-    RevocationUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/RevocationListCreateRequest"
+        - properties:
+            url:
+              type: string
+              description: URL of the deployed revocation credential
+    RevocationListArrayResponse:
       additionalProperties: false
-      description: Object describing the update to make on the revocation credential
+      description: Object containing an array of all revocation configurations
       example:
-        revocationIndex: 10
-        revoked: true
+        revocations:
+          - id: 8858b74c-564f-44d6-942a-06ee4e2f2944
+            url: https://example.com/revocation-credential.jsonld
+            listSize: 1000000
+            publishMethod: github
+            gitHubOptions:
+              token: <github-access-token>
+              owner: Organization
+              repo: RepositoryName
+              branch: Branch
+              path: revocation-credential.jsonld
       properties:
-        revocationIndex:
-          description: Index in the revocation list to be updated
-          type: number
-        revoked:
-          description: Boolean describing wether the credential at that index has been revoked or not
-          type: boolean
-    RevocationStatusResponse:
+        revocations:
+          description: An array of revocation config objects
+          type: array
+          items:
+            $ref: "#/components/schemas/RevocationListResponse"
+    RevocationStatus:
       additionalProperties: false
-      description: Object containing the revocation status of the requested index
+      description: Object containing the revocation status of the associated index
       example:
         revoked: true
       properties:

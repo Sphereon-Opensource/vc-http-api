@@ -1,14 +1,14 @@
 import {assertRevocationList2020Context, checkStatus, createList, decodeList} from 'vc-revocation-list';
 import vcjs from 'vc-js';
 import Promise from 'promise';
-import publishing from "./publishing";
+import publishing from './publishing';
 import {documentLoader} from '../customDocumentLoader';
-import RevocationPublishError from "../error/RevocationPublishError";
-import InvalidRequestError from "../error/InvalidRequestError";
+import RevocationPublishError from '../error/RevocationPublishError';
+import InvalidRequestError from '../error/InvalidRequestError';
 import {getSuite} from "../verificationService";
-import ResourceNotFoundError from "../error/ResourceNotFoundError";
-import CredentialLoadError from "../error/CredentialLoadError";
-import vc from "vc-js";
+import ResourceNotFoundError from '../error/ResourceNotFoundError';
+import CredentialLoadError from '../error/CredentialLoadError';
+import InvalidRevocationOptions from "../error/InvalidRevocationOptions";
 
 const PublishMethod = Object.freeze({
     HOSTED: 'hosted',
@@ -16,7 +16,14 @@ const PublishMethod = Object.freeze({
 });
 
 const validateRevocationConfig = async revocationConfig => {
-    const {publishMethod, gitHubOptions, hostedOptions} = revocationConfig;
+    const {publishMethod, gitHubOptions, hostedOptions, listSize, id} = revocationConfig;
+    if (!listSize || typeof listSize !== "number") {
+        const message = `Unexpected listSize value. ${listSize} is not of type number.`;
+        throw new InvalidRevocationOptions(message);
+    }
+    if (!id) {
+        throw new InvalidRevocationOptions("Revocation id must not be empty.");
+    }
     switch (publishMethod) {
         case PublishMethod.GITHUB:
             await publishing.github.validateGitHubOptions(gitHubOptions);
@@ -101,13 +108,13 @@ const _createRevocationListCredential = async ({issuer, issuanceDate}, list) => 
     };
 };
 
-const checkRevocationStatus = async (rvc, index) =>{
+const checkRevocationStatus = async (rvc, index) => {
     const {credentialSubject: rl} = rvc;
     const {encodedList} = rl;
     let list;
     try {
         list = await decodeList({encodedList});
-    } catch(e) {
+    } catch (e) {
         throw new Error(`Could not decode encoded revocation list; reason: ${e.message}`);
     }
     return list.isRevoked(index);
@@ -121,7 +128,7 @@ const _loadRevocationListCredential = vc => {
     return documentLoader(rvcUrl)
         .then(res => {
             const rvc = res.document;
-            if(!rvc.proof){
+            if (!rvc.proof) {
                 const message = `Revocation credential has no proof object at URL: ${rvcUrl}`;
                 throw new CredentialLoadError(message);
             }

@@ -1,6 +1,11 @@
 import {Schema} from "mongoose";
 
-export default new Schema({
+const RevocationConfigSchema = new Schema({
+    id: {
+        type: String,
+        index: true,
+        required: true,
+    },
     publishMethod: {
         type: String,
         enum: ['github', 'hosted'],
@@ -21,4 +26,13 @@ export default new Schema({
       required: false,
     },
     url: {type: String, required: false},
+    listSize: {type: Number, required: true},
 });
+
+RevocationConfigSchema.methods.toJSON = function() {
+    const obj = this.toObject();
+    delete obj._id;
+    return obj;
+}
+
+export default RevocationConfigSchema;

@@ -22,7 +22,7 @@ export default ({config}) => {
     api.use('/prove', holder({config}));
 
     // mount the revocation resource
-    api.use('/revocation', passport.authenticate('bearer', {session: false}), revocation({config}));
+    api.use('/revocations', passport.authenticate('bearer', {session: false}), revocation({config}));
 
     // mount the hosted credential resource
     api.use('/credentials', credentials({config}));

@@ -11,7 +11,7 @@ const UserSchema = new Schema({
     password: {type: String, required: true},
     did: {type: String, required: false},
     idSec: {type: String, required: false},
-    revocationConfig: RevocationConfigSchema
+    revocationConfigs: [RevocationConfigSchema],
 });
 
 UserSchema.plugin(fieldEncryption, {fields: ['idSec'], secret: encryptionSecret});

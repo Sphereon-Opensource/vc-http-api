@@ -4,7 +4,8 @@ import {
     createRevocationCredential,
     getRevocationCredential,
     publishRevocationCredential,
-    updateRevocationCredential, validateRevocationConfig
+    updateRevocationCredential,
+    validateRevocationConfig
 } from "../lib/revocation";
 import {issueFactomCredential} from "../lib/factomService";
 import {handleErrorResponse} from "../lib/util";
@@ -12,7 +13,7 @@ import {handleErrorResponse} from "../lib/util";
 export default ({config}) => {
     let api = Router();
 
-    api.post('/config', async (req, res) => {
+    api.post('', async (req, res) => {
             const revocationConfig = req.body;
             const user = req.user;
             try {
@@ -20,64 +21,70 @@ export default ({config}) => {
             } catch (err) {
                 return handleErrorResponse(res, err);
             }
-            user.revocationConfig = revocationConfig;
-            return user.save()
-                .then(() => res.status(200).send())
-                .catch(err => {
-                    const message = `Could not save revocation config to authenticated user. 
+            const {id: revocationId} = revocationConfig;
+            if (user.revocationConfigs.some(config => config.id === revocationId)) {
+                const message = `Revocation configuration already exists with id: ${revocationId}`;
+                return res.status(403).send({message});
+            }
+            const {listSize} = revocationConfig;
+            const {did, idSec} = user;
+            let rc, rvc;
+            try {
+                rc = await createRevocationCredential(listSize, did);
+                rvc = await issueFactomCredential(rc, {did, idSec});
+                revocationConfig.url = await publishRevocationCredential(rvc, revocationConfig);
+            } catch (err) {
+                handleErrorResponse(res, err);
+            }
+            user.revocationConfigs.push(revocationConfig);
+            try {
+                await user.save()
+            } catch (err) {
+                const message = `Could not save revocation config to authenticated user. 
                     Originating message: ${err.message}`;
-                    res.status(500).send({message});
-                });
+                return res.status(500).send({message});
+            }
+            res.status(200).send(revocationConfig);
         }
     );
 
-    api.get('/config', (req, res) => {
+    api.get('', (req, res) => {
         const user = req.user;
-        if (!user.revocationConfig) {
-            return res.status(404).send({message: "No revocation config found for authenticated user."});
-        }
-        return res.status(200).send(user.revocationConfig);
+        return res.status(200).send({revocations: user.revocationConfigs});
     });
 
-    api.post('/init', async (req, res) => {
-        const {user} = req;
-        const {revocationConfig, did, idSec} = user;
-        const {listSize} = req.body;
-        if (!listSize || typeof listSize !== "number") {
-            const message = `Unexpected listSize value. ${listSize} is not of type number.`;
-            return res.status(400).send({message});
-        }
+    api.get('/:id', (req, res) => {
+        const user = req.user;
+        const {id: revocationId} = req.params;
+        const revocationConfig = user.revocationConfigs.find(config => config.id === revocationId);
         if (!revocationConfig) {
-            const message = "No revocation config found for authenticated user";
+            const message = `Could not find revocation for authenticated user with id: ${revocationId}`;
             return res.status(404).send({message});
         }
-        if (revocationConfig.url) {
-            const message = "Revocation list already initialized, cannot reinitialize without overwriting statuses.";
-            return res.status(403).send({message});
-        }
-        const rc = await createRevocationCredential(listSize, did);
-        const rvc = await issueFactomCredential(rc, {did, idSec});
-        return publishRevocationCredential(rvc, revocationConfig)
-            .then(url => {
-                user.revocationConfig.url = url;
-                return user.save()
-                    .then(() => res.status(200).send({url}));
-            })
-            .catch(err => handleErrorResponse(res, err));
-
+        return res.status(200).send(revocationConfig);
     });
 
-    api.post('/update', (req, res) => {
+    api.post('/:id/list/:index', (req, res) => {
         const {user, body} = req;
-        const {revocationIndex, revoked} = body;
-        const {revocationConfig, did, idSec} = user;
+        const {index, id: revocationId} = req.params;
+        const {revoked} = body;
+        const {revocationConfigs, did, idSec} = user;
+        const revocationConfig = revocationConfigs.find(config => config.id === revocationId);
         if (!revocationConfig) {
-            const message = "Revocation not configured for authenticated user."
-            res.status(400).send({message});
+            const message = `No revocation configuration found for id: ${req.params.id}`;
+            return res.status(404).send({message});
         }
         if (!revocationConfig.url) {
             const message = "Revocation credential not initialized.";
-            res.status(400).send({message})
+            return res.status(400).send({message})
+        }
+        let revocationIndex;
+        try {
+            revocationIndex = parseInt(index);
+        } catch (err) {
+            const message = `Could not parse index to integer. Supplied index: ${index}. 
+            Originating error: ${err.message}`;
+            return res.status(400).send({message});
         }
         return getRevocationCredential(revocationConfig)
             .then(rvc => updateRevocationCredential(rvc, revocationIndex, revoked))
@@ -87,23 +94,24 @@ export default ({config}) => {
             .catch(err => handleErrorResponse(res, err));
     });
 
-    api.get('/status/:index', (req, res) => {
-        const {index} = req.params;
+    api.get('/:id/list/:index', (req, res) => {
+        const {index, id: revocationId} = req.params;
         const {user} = req;
-        const {revocationConfig} = user;
+        const revocationConfig = user.revocationConfigs.find(config => config.id === revocationId);
         if (!revocationConfig) {
-            const message = "Revocation not configured for authenticated user."
-            res.status(400).send({message});
+            const message = `No revocation configuration found for id: ${req.params.id}`;
+            return res.status(404).send({message});
         }
         if (!revocationConfig.url) {
-            const message = "Revocation credential not initialized.";
-            res.status(400).send({message})
+            const message = "Revocation credential does not have a deployment URL.";
+            res.status(500).send({message})
         }
         let revocationIndex;
         try {
             revocationIndex = parseInt(index);
-        } catch(err) {
-            const message = `Unable to parse ${index} to a non-zero integer.`
+        } catch (err) {
+            const message = `Could not parse index to integer. Supplied index: ${index}. 
+            Originating error: ${err.message}`;
             return res.status(400).send({message});
         }
         return getRevocationCredential(revocationConfig)
