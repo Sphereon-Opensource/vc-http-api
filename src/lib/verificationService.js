@@ -1,4 +1,4 @@
-import {publishRevocationCredential, verifyCredentialWithRevocation} from "./revocation";
+import {verifyCredentialWithRevocation} from "./revocation";
 import revocation from "../api/revocation";
 
 const {getDidDocument} = require('./didDocumentService');

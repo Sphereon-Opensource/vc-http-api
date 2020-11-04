@@ -4,11 +4,11 @@
   "description": "Issue VCs and verify all W3C compliant credentials",
   "main": "dist",
   "scripts": {
-    "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
-    "build": "babel src -s -D -d dist --presets es2015,stage-0",
+    "dev": "nodemon -w src --exec \"babel-node src\"",
+    "build": "babel src -s -D -d dist",
     "start": "node dist",
     "prestart": "npm run -s build",
-    "test": "eslint src"
+    "test": "mocha src/**/*.test.js --require @babel/register"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -28,9 +28,11 @@
   "author": "Scott Malley <smalley@sphereon.com>",
   "license": "MIT",
   "dependencies": {
+    "@babel/runtime": "^7.12.5",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.13.3",
     "bs58": "^4.0.1",
+    "chai": "^4.2.0",
     "compression": "^1.5.2",
     "cors": "^2.7.1",
     "express": "^4.13.3",
@@ -41,6 +43,7 @@
     "jsonld": "^3.1.0",
     "jsonld-signatures": "^5.0.1",
     "jwt-simple": "^0.5.6",
+    "mocha": "^8.2.1",
     "mongoose": "^5.10.9",
     "mongoose-field-encryption": "^4.0.0",
     "morgan": "^1.8.0",
@@ -60,13 +63,15 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.9.0",
-    "babel-core": "^6.9.0",
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/node": "^7.12.6",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/register": "^7.12.1",
     "babel-eslint": "^10.1.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
     "eslint": "^4.12.1",
-    "nodemon": "^1.19.4"
+    "nodemon": "^1.19.4",
+    "sinon": "^9.2.1"
   }
 }
