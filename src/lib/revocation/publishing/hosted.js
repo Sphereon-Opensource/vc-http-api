@@ -50,7 +50,7 @@ const validateHostedOptions = ({credentialId}) => {
 };
 
 const _getHostedUrl = credentialId => {
-    return `${baseUrl}/services/credentials/${credentialId}/revocation-credential.jsonld`;
+    return `${baseUrl}/services/credentials/${credentialId}`;
 };
 
 export default {publish, validateHostedOptions, getRevocationCredential};

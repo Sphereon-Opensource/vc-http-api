@@ -3,7 +3,7 @@ import Credential from '../models/Credential';
 
 export default ({config}) => {
     let api = Router();
-    api.get('/:id/revocation-credential.jsonld', (req, res) => {
+    api.get('/:id', (req, res) => {
         const {id} = req.params;
         Credential.findOne({id}, (err, {credential}) => {
             if (err) {

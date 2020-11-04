@@ -390,6 +390,26 @@ components:
               type: string
       example:
         id: 'did:key:z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd'
+    CredentialStatus:
+      type: object
+      description: An object describing where to resolve the credential revocation status.
+      properties:
+        id:
+          description: A URL that identifies the status information associated with the Verifiable Credential.
+          type: string
+        "type":
+          description: The JSONLD object type. Currently RevocationList2020Status.
+          type: string
+          enum:
+            - RevocationList2020Status
+        revocationListIndex:
+          description: >
+            An arbitrary size integer greater than or equal to 0, expressed as a string.
+            The value identifies the bit position of the revocation status of the verifiable credential.
+          type: string
+        revocationListCredential:
+          description: A URL to the revocation list Verifiable Credential.
+          type: string
     Credential:
       type: object
       description: A JSON-LD Verifiable Credential without a proof.
@@ -397,6 +417,8 @@ components:
         "@context":
           type: array
           description: The JSON-LD context of the credential.
+        "credentialStatus":
+          $ref: '#/components/schemas/CredentialStatus'
         "id":
           type: string
           description: The ID of the credential.
@@ -418,6 +440,12 @@ components:
         '@context':
           - 'https://www.w3.org/2018/credentials/v1'
           - 'https://www.w3.org/2018/credentials/examples/v1'
+          - 'https://w3id.org/vc-revocation-list-2020/v1'
+        "credentialStatus":
+          "id": "http://example.gov/credentials/3732#2"
+          "type": "RevocationList2020Status"
+          "revocationListIndex": "2"
+          "revocationListCredential": "https://example.github.io/example-repo/revocation-credential.jsonld"
         credentialSubject:
           degree:
             name: Bachelor of Science and Arts
