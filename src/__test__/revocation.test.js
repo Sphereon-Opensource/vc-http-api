@@ -100,7 +100,7 @@ describe('Revocation tests', () => {
                 .then(url => {
                     assert.typeOf(url, 'string');
                     assert.equal(url, 'http://example.com/services/credentials/test-credential-id');
-                    done()
+                    done();
                 }).catch(done);
         });
     });

@@ -21,9 +21,9 @@ export default ({config}) => {
             } catch (err) {
                 return handleErrorResponse(res, err);
             }
-            const {id: revocationId} = revocationConfig;
-            if (user.revocationConfigs.some(config => config.id === revocationId)) {
-                const message = `Revocation configuration already exists with id: ${revocationId}`;
+            const {id: configId} = revocationConfig;
+            if (user.revocationConfigs.some(config => config.id === configId)) {
+                const message = `Revocation configuration already exists with id: ${configId}`;
                 return res.status(403).send({message});
             }
             const {listSize} = revocationConfig;
@@ -55,10 +55,10 @@ export default ({config}) => {
 
     api.get('/:id', (req, res) => {
         const user = req.user;
-        const {id: revocationId} = req.params;
-        const revocationConfig = user.revocationConfigs.find(config => config.id === revocationId);
+        const {id: configId} = req.params;
+        const revocationConfig = user.revocationConfigs.find(config => config.id === configId);
         if (!revocationConfig) {
-            const message = `Could not find revocation for authenticated user with id: ${revocationId}`;
+            const message = `Could not find revocation for authenticated user with id: ${configId}`;
             return res.status(404).send({message});
         }
         return res.status(200).send(revocationConfig);
@@ -66,10 +66,10 @@ export default ({config}) => {
 
     api.post('/:id/list/:index', (req, res) => {
         const {user, body} = req;
-        const {index, id: revocationId} = req.params;
+        const {index, id: configId} = req.params;
         const {revoked} = body;
         const {revocationConfigs, did, idSec} = user;
-        const revocationConfig = revocationConfigs.find(config => config.id === revocationId);
+        const revocationConfig = revocationConfigs.find(config => config.id === configId);
         if (!revocationConfig) {
             const message = `No revocation configuration found for id: ${req.params.id}`;
             return res.status(404).send({message});
@@ -95,9 +95,9 @@ export default ({config}) => {
     });
 
     api.get('/:id/list/:index', (req, res) => {
-        const {index, id: revocationId} = req.params;
+        const {index, id: configId} = req.params;
         const {user} = req;
-        const revocationConfig = user.revocationConfigs.find(config => config.id === revocationId);
+        const revocationConfig = user.revocationConfigs.find(config => config.id === configId);
         if (!revocationConfig) {
             const message = `No revocation configuration found for id: ${req.params.id}`;
             return res.status(404).send({message});
