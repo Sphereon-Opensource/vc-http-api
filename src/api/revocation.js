@@ -28,11 +28,11 @@ export default ({config}) => {
             }
             const {listSize} = revocationConfig;
             const {did, idSec} = user;
-            let rc, rvc;
+            let revocationListCred, revocationListVC;
             try {
-                rc = await createRevocationCredential(listSize, did);
-                rvc = await issueFactomCredential(rc, {did, idSec});
-                revocationConfig.url = await publishRevocationCredential(rvc, revocationConfig);
+                revocationListCred = await createRevocationCredential(listSize, did);
+                revocationListVC = await issueFactomCredential(revocationListCred, {did, idSec});
+                revocationConfig.url = await publishRevocationCredential(revocationListVC, revocationConfig);
             } catch (err) {
                 handleErrorResponse(res, err);
             }
@@ -87,9 +87,9 @@ export default ({config}) => {
             return res.status(400).send({message});
         }
         return getRevocationCredential(revocationConfig)
-            .then(rvc => updateRevocationCredential(rvc, revocationIndex, revoked))
-            .then(updatedRc => issueFactomCredential(updatedRc, {did, idSec}))
-            .then(updatedRvc => publishRevocationCredential(updatedRvc, revocationConfig))
+            .then(revocationListVC => updateRevocationCredential(revocationListVC, revocationIndex, revoked))
+            .then(newRevocationListCred => issueFactomCredential(newRevocationListCred, {did, idSec}))
+            .then(newRevocationListVC => publishRevocationCredential(newRevocationListVC, revocationConfig))
             .then(() => res.status(200).send())
             .catch(err => handleErrorResponse(res, err));
     });
@@ -115,7 +115,7 @@ export default ({config}) => {
             return res.status(400).send({message});
         }
         return getRevocationCredential(revocationConfig)
-            .then(rvc => checkRevocationStatus(rvc, revocationIndex))
+            .then(revocationListVC => checkRevocationStatus(revocationListVC, revocationIndex))
             .then(result => res.status(200).send({revoked: result}))
             .catch(err => handleErrorResponse(res, err));
     });
