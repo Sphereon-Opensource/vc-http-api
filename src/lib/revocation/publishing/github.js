@@ -41,7 +41,7 @@ const validateGitHubOptions = gitHubOptions => {
             return reject(new InvalidRevocationOptions(message));
         }
 
-        const branch = gitHubOptions.branch || 'master';
+        const branch = gitHubOptions.branch || DEFAULT_BRANCH;
         const github = new GitHubApi({token});
         const repository = github.getRepo(owner, repo);
 

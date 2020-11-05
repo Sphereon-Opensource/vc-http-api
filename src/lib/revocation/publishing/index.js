@@ -1,4 +1,4 @@
 import github from './github';
-import hosted from './hosted';
+import mongo from './mongo';
 
-export default {github, hosted};
+export default {github, mongo};

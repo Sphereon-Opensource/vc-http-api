@@ -132,7 +132,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RevocationConfig"
+              $ref: "#/components/schemas/RevocationListCreateRequest"
         description: Configuration for publishing a revocation credential
       responses:
         '200':
@@ -678,14 +678,14 @@ components:
           type: string
           enum:
             - github
-            - hosted
+            - mongo
         gitHubOptions:
           $ref: "#/components/schemas/GitHubOptions"
-        hostedOptions:
-          $ref: '#/components/schemas/HostedOptions'
-    HostedOptions:
+        mongoOptions:
+          $ref: '#/components/schemas/MongoOptions'
+    MongoOptions:
       additionalProperties: false
-      description: Object containing options for hosting the revocation credential on the vc-http-api
+      description: Object containing options for hosting the revocation credential on the vc-http-api MongoDB
       example:
         credentialId: 'f0a910f8-697d-4f4e-83c4-ea06e54aa094'
       properties:

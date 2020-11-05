@@ -24,7 +24,7 @@ export default ({config}) => {
     // mount the revocation resource
     api.use('/revocations', passport.authenticate('bearer', {session: false}), revocation({config}));
 
-    // mount the hosted credential resource
+    // mount the mongo credential resource
     api.use('/credentials', credentials({config}));
 
     // mount authentication resource

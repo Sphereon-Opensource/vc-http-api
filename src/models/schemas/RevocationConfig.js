@@ -8,8 +8,8 @@ const RevocationConfigSchema = new Schema({
     },
     publishMethod: {
         type: String,
-        enum: ['github', 'hosted'],
-        default: 'hosted',
+        enum: ['github', 'mongo'],
+        default: 'mongo',
     },
     gitHubOptions: {
         type: {
@@ -21,7 +21,7 @@ const RevocationConfigSchema = new Schema({
         },
         required: false,
     },
-    hostedOptions: {
+    mongoOptions: {
       type: {credentialId: {type: String, required: true}},
       required: false,
     },

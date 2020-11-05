@@ -35,10 +35,10 @@ const getRevocationCredential = ({credentialId}) => {
 
 }
 
-const validateHostedOptions = ({credentialId}) => {
+const validateMongoOptions = ({credentialId}) => {
     return new Promise((resolve, reject) => {
         if(!credentialId){
-            reject(new InvalidRevocationOptions("No credentialId specified for hosted options."));
+            reject(new InvalidRevocationOptions("No credentialId specified for mongo options."));
         }
         Credential.findOne({id: credentialId}, (err, doc) => {
             if(doc){
@@ -53,4 +53,4 @@ const _getHostedUrl = credentialId => {
     return `${baseUrl}/services/credentials/${credentialId}`;
 };
 
-export default {publish, validateHostedOptions, getRevocationCredential};
+export default {publish, validateMongoOptions, getRevocationCredential};

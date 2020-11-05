@@ -11,25 +11,25 @@ import CredentialLoadError from '../error/CredentialLoadError';
 import InvalidRevocationOptions from "../error/InvalidRevocationOptions";
 
 const PublishMethod = Object.freeze({
-    HOSTED: 'hosted',
+    MONGO: 'mongo',
     GITHUB: 'github',
 });
 
 const validateRevocationConfig = async revocationConfig => {
-    const {publishMethod, gitHubOptions, hostedOptions, listSize, id} = revocationConfig;
+    const {publishMethod, gitHubOptions, mongoOptions, listSize, id} = revocationConfig;
     if (!listSize || typeof listSize !== "number") {
         const message = `Unexpected listSize value. ${listSize} is not of type number.`;
         throw new InvalidRevocationOptions(message);
     }
     if (!id) {
-        throw new InvalidRevocationOptions("Revocation id must not be empty.");
+        throw new InvalidRevocationOptions("Revocation config id must not be empty.");
     }
     switch (publishMethod) {
         case PublishMethod.GITHUB:
             await publishing.github.validateGitHubOptions(gitHubOptions);
             break;
-        case PublishMethod.HOSTED:
-            await publishing.hosted.validateHostedOptions(hostedOptions);
+        case PublishMethod.MONGO:
+            await publishing.mongo.validateMongoOptions(mongoOptions);
             break;
         default:
             const message = `Invalid publishMethod. Expected one of ${Object.values(PublishMethod)} 
@@ -40,15 +40,15 @@ const validateRevocationConfig = async revocationConfig => {
 
 const createRevocationCredential = async (listSize, issuer) => {
     const list = await createList({length: listSize});
-    return _createRevocationListCredential({issuer, issuanceDate: (new Date()).toISOString()}, list);
+    return _createRevocationList2020Credential({issuer, issuanceDate: (new Date()).toISOString()}, list);
 };
 
 const publishRevocationCredential = (rc, revocationConfig) => {
     switch (revocationConfig.publishMethod) {
         case PublishMethod.GITHUB:
             return publishing.github.publish({...revocationConfig.gitHubOptions, content: rc});
-        case PublishMethod.HOSTED:
-            return publishing.hosted.publish({...revocationConfig.hostedOptions, content: rc});
+        case PublishMethod.MONGO:
+            return publishing.mongo.publish({...revocationConfig.mongoOptions, content: rc});
         default:
             return new Promise((_, reject) => reject(
                 new RevocationPublishError(`Invalid publishMethod saved in config.
@@ -59,8 +59,8 @@ const publishRevocationCredential = (rc, revocationConfig) => {
 
 const getRevocationCredential = revocationConfig => {
     switch (revocationConfig.publishMethod) {
-        case PublishMethod.HOSTED:
-            return publishing.hosted.getRevocationCredential({...revocationConfig.hostedOptions});
+        case PublishMethod.MONGO:
+            return publishing.mongo.getRevocationCredential({...revocationConfig.mongoOptions});
         case PublishMethod.GITHUB:
             return publishing.github.getRevocationCredential({...revocationConfig.gitHubOptions});
         default:
@@ -75,7 +75,7 @@ const updateRevocationCredential = async (rvc, revocationIndex, revoked) => {
     assertRevocationList2020Context({credential: rvc});
     const list = await decodeList({encodedList: rvc.credentialSubject.encodedList});
     list.setRevoked(revocationIndex, revoked);
-    return _createRevocationListCredential(rvc, list);
+    return _createRevocationList2020Credential(rvc, list);
 };
 
 const verifyCredentialWithRevocation = async vc => {
@@ -93,7 +93,7 @@ const verifyCredentialWithRevocation = async vc => {
     });
 };
 
-const _createRevocationListCredential = async ({issuer, issuanceDate}, list) => {
+const _createRevocationList2020Credential = async ({issuer, issuanceDate}, list) => {
     const encodedList = await list.encode();
     return {
         "@context": ["https://www.w3.org/2018/credentials/v1", "https://w3id.org/vc-revocation-list-2020/v1"],
