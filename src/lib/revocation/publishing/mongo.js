@@ -29,7 +29,7 @@ const getRevocationCredential = ({credentialId}) => {
                Originating error: ${err.message}`;
                reject(new ResourceNotFoundError(message));
            }
-           return doc.credential;
+           return resolve(doc.credential);
         });
     }));
 

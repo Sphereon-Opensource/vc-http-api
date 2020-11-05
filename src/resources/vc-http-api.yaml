@@ -189,8 +189,8 @@ paths:
           description: error!
       tags:
         - Revocation
-  /revocations/{id}/list/update:
-    post:
+  /revocations/{id}/list/manage:
+    put:
       description: Update the revocation status of a specific revocation list index.
       security:
         - bearerAuth: []
@@ -215,7 +215,7 @@ paths:
           description: error!
       tags:
         - Revocation
-  /revocation/{id}/list/check:
+  /revocations/{id}/list:
     post:
       description: Get revocation status for a specific index.
       security:

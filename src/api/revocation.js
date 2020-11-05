@@ -87,7 +87,7 @@ export default ({config}) => {
         return res.status(200).send(revocationConfig);
     });
 
-    api.post('/:id/list/update', (req, res) => {
+    api.put('/:id/list/manage', (req, res) => {
         let updateRevocationRequest;
         try {
             updateRevocationRequest = _parseRevocationRequest(req, res);
@@ -104,7 +104,7 @@ export default ({config}) => {
             .catch(err => handleErrorResponse(res, err));
     });
 
-    api.post('/:id/list/check', (req, res) => {
+    api.post('/:id/list', (req, res) => {
         let checkRevocationRequest;
         try {
             checkRevocationRequest = _parseRevocationRequest(req, res);
