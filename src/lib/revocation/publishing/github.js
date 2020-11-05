@@ -6,7 +6,7 @@ import CredentialLoadError from "../../error/CredentialLoadError";
 const DEFAULT_PATH = 'revocation-credential.jsonld';
 const DEFAULT_BRANCH = 'master';
 
-const publish = ({token, owner, repo, branch, path, content}) => {
+const publish = ({token, owner, repo, branch, path, content, useGitHubPages}) => {
     const commitPath = path || DEFAULT_PATH;
     const commitBranch = branch || DEFAULT_BRANCH;
 
@@ -22,7 +22,7 @@ const publish = ({token, owner, repo, branch, path, content}) => {
             commitMessage,
             function (err) {
                 if (!err) {
-                    return resolve(_getGitHubUrl(owner, repo, commitPath));
+                    return resolve(_getGitHubUrl(owner, repo, commitBranch, commitPath, useGitHubPages));
                 }
                 reject(err);
             }
@@ -85,8 +85,11 @@ const getRevocationCredential = ({token, owner, repo, branch, path}) => {
         });
 };
 
-const _getGitHubUrl = (owner, repo, path) => {
-    return `https://${owner.toLowerCase()}.github.io/${repo.toLowerCase()}/${path}`;
+const _getGitHubUrl = (owner, repo, branch, path, useGitHubPages) => {
+    if(useGitHubPages){
+        return `https://${owner.toLowerCase()}.github.io/${repo.toLowerCase()}/${path}`;
+    }
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
 };
 
 

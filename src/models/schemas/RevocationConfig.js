@@ -18,6 +18,7 @@ const RevocationConfigSchema = new Schema({
             repo: {type: String, required: true},
             branch: {type: String, required: false},
             path: {type: String, required: false},
+            useGitHubPages: {type: Boolean, required: false}
         },
         required: false,
     },

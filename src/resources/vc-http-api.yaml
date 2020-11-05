@@ -666,6 +666,7 @@ components:
           repo: RepositoryName
           branch: Branch
           path: revocation-credential.jsonld
+          useGitHubPages: true
       properties:
         id:
           description: Identifier for the revocation list
@@ -701,6 +702,7 @@ components:
         repo: RepositoryName
         branch: Branch
         path: revocation-credential.jsonld
+        useGitHubPages: true
       properties:
         token:
           description: GitHub access token with write permissions to the selected repository
@@ -717,6 +719,9 @@ components:
         path:
           description: The path to the jsonld credential file to update. Default is 'revocation-credential.jsonld'
           type: string
+        useGitHubPages:
+          description: Whether to use a GitHub pages URL for to point to the published revocation credential
+          type: boolean
     RevocationListResponse:
       additionalProperties: false
       description: Object containing revocation credential initialization result.
