@@ -9,6 +9,29 @@ import {
 } from "../lib/revocation";
 import {issueFactomCredential} from "../lib/factomService";
 import {handleErrorResponse} from "../lib/util";
+import ResourceNotFoundError from "../lib/error/ResourceNotFoundError";
+import InvalidRequestError from "../lib/error/InvalidRequestError";
+
+const _parseRevocationRequest = req => {
+    const {user, body} = req;
+    const {id: configId} = req.params;
+    const {revoked, index} = body;
+    const {revocationConfigs} = user;
+    const revocationConfig = revocationConfigs.find(config => config.id === configId);
+    if (!revocationConfig) {
+        const message = `No revocation configuration found for id: ${req.params.id}`;
+        throw new ResourceNotFoundError(message);
+    }
+    let revocationIndex;
+    try {
+        revocationIndex = parseInt(index);
+    } catch (err) {
+        const message = `Could not parse index to integer. Supplied index: ${index}. 
+            Originating error: ${err.message}`;
+        throw new InvalidRequestError(message);
+    }
+    return {revocationIndex, revocationConfig, revoked};
+};
 
 export default ({config}) => {
     let api = Router();
@@ -64,24 +87,15 @@ export default ({config}) => {
         return res.status(200).send(revocationConfig);
     });
 
-    api.post('/:id/list/:index', (req, res) => {
-        const {user, body} = req;
-        const {index, id: configId} = req.params;
-        const {revoked} = body;
-        const {revocationConfigs, did, idSec} = user;
-        const revocationConfig = revocationConfigs.find(config => config.id === configId);
-        if (!revocationConfig) {
-            const message = `No revocation configuration found for id: ${req.params.id}`;
-            return res.status(404).send({message});
-        }
-        let revocationIndex;
+    api.post('/:id/list/update', (req, res) => {
+        let updateRevocationRequest;
         try {
-            revocationIndex = parseInt(index);
+            updateRevocationRequest = _parseRevocationRequest(req, res);
         } catch (err) {
-            const message = `Could not parse index to integer. Supplied index: ${index}. 
-            Originating error: ${err.message}`;
-            return res.status(400).send({message});
+            return handleErrorResponse(res, err);
         }
+        const {revocationConfig, revocationIndex, revoked} = updateRevocationRequest;
+        const {did, idSec} = req.user;
         return getRevocationCredential(revocationConfig)
             .then(revocationListVC => updateRevocationCredential(revocationListVC, revocationIndex, revoked))
             .then(newRevocationListCred => issueFactomCredential(newRevocationListCred, {did, idSec}))
@@ -90,25 +104,17 @@ export default ({config}) => {
             .catch(err => handleErrorResponse(res, err));
     });
 
-    api.get('/:id/list/:index', (req, res) => {
-        const {index, id: configId} = req.params;
-        const {user} = req;
-        const revocationConfig = user.revocationConfigs.find(config => config.id === configId);
-        if (!revocationConfig) {
-            const message = `No revocation configuration found for id: ${req.params.id}`;
-            return res.status(404).send({message});
-        }
-        let revocationIndex;
+    api.post('/:id/list/check', (req, res) => {
+        let checkRevocationRequest;
         try {
-            revocationIndex = parseInt(index);
+            checkRevocationRequest = _parseRevocationRequest(req, res);
         } catch (err) {
-            const message = `Could not parse index to integer. Supplied index: ${index}. 
-            Originating error: ${err.message}`;
-            return res.status(400).send({message});
+            return handleErrorResponse(res, err);
         }
+        const {revocationConfig, revocationIndex} = checkRevocationRequest;
         return getRevocationCredential(revocationConfig)
             .then(revocationListVC => checkRevocationStatus(revocationListVC, revocationIndex))
-            .then(result => res.status(200).send({revoked: result}))
+            .then(result => res.status(200).send({revoked: result, index: revocationIndex}))
             .catch(err => handleErrorResponse(res, err));
     });
     return api;

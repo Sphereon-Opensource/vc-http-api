@@ -189,7 +189,7 @@ paths:
           description: error!
       tags:
         - Revocation
-  /revocations/{id}/list/{index}:
+  /revocations/{id}/list/update:
     post:
       description: Update the revocation status of a specific revocation list index.
       security:
@@ -201,13 +201,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: index
-          in: path
-          description: Revocation index
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         content:
           application/json:
@@ -222,7 +215,8 @@ paths:
           description: error!
       tags:
         - Revocation
-    get:
+  /revocation/{id}/list/check:
+    post:
       description: Get revocation status for a specific index.
       security:
         - bearerAuth: []
@@ -233,13 +227,11 @@ paths:
           required: true
           schema:
             type: string
-        - name: index
-          in: path
-          description: Revocation index
-          required: true
-          schema:
-            type: integer
-            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckRevocationRequest'
       responses:
         '200':
           content:
@@ -762,7 +754,20 @@ components:
       description: Object containing the revocation status of the associated index
       example:
         revoked: true
+        index: 100
       properties:
         revoked:
           description: Boolean describing whether a credential has been revoked
           type: boolean
+        index:
+          description: Index corresponding to the revocation status
+          type: integer
+    CheckRevocationRequest:
+      additionalProperties: false
+      description: Object containing the index of the revocation status to be checked.
+      example:
+        index: 100
+      properties:
+        index:
+          description: Integer describing the index of the revocation status to check.
+          type: integer
