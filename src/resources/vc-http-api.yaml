@@ -16,6 +16,8 @@ tags:
     description: APIs for Verifiers.
   - name: Holder
     description: Optional APIs for Holders.
+  - name: Revocation
+    description: APIs for credential revocation.
   - name: Auth
     description: Auth APIs for Issuers
 servers:
@@ -121,6 +123,128 @@ paths:
           description: invalid input!
         "500":
           description: error!
+  /revocations:
+    post:
+      description: Create a new revocation for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevocationListCreateRequest"
+        description: Configuration for publishing a revocation credential
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationListResponse'
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
+    get:
+      description: Get the revocations for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationListArrayResponse'
+          description: success!
+        '404':
+          description: Could not find config for authenticated user.
+        '500':
+          description: error!
+      tags:
+        - Revocation
+  /revocations/{id}:
+    get:
+      description: Get the parameters for a revocation configuration associated with the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationListResponse'
+          description: success!
+        '404':
+          description: Could not find config for authenticated user.
+        '500':
+          description: error!
+      tags:
+        - Revocation
+  /revocations/{id}/list/manage:
+    put:
+      description: Update the revocation status of a specific revocation list index.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RevocationStatus'
+      responses:
+        '200':
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
+  /revocations/{id}/list:
+    post:
+      description: Get revocation status for a specific index.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Revocation id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckRevocationRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RevocationStatus'
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+      tags:
+        - Revocation
   /auth/register:
     post:
       description: >-
@@ -258,6 +382,26 @@ components:
               type: string
       example:
         id: 'did:key:z6MkjRagNiMu91DduvCvgEsqLZDVzrJzFrwahc4tXLt9DoHd'
+    CredentialStatus:
+      type: object
+      description: An object describing where to resolve the credential revocation status.
+      properties:
+        id:
+          description: A URL that identifies the status information associated with the Verifiable Credential.
+          type: string
+        "type":
+          description: The JSONLD object type. Currently RevocationList2020Status.
+          type: string
+          enum:
+            - RevocationList2020Status
+        revocationListIndex:
+          description: >
+            An arbitrary size integer greater than or equal to 0, expressed as a string.
+            The value identifies the bit position of the revocation status of the verifiable credential.
+          type: string
+        revocationListCredential:
+          description: A URL to the revocation list Verifiable Credential.
+          type: string
     Credential:
       type: object
       description: A JSON-LD Verifiable Credential without a proof.
@@ -265,6 +409,8 @@ components:
         "@context":
           type: array
           description: The JSON-LD context of the credential.
+        "credentialStatus":
+          $ref: '#/components/schemas/CredentialStatus'
         "id":
           type: string
           description: The ID of the credential.
@@ -286,6 +432,12 @@ components:
         '@context':
           - 'https://www.w3.org/2018/credentials/v1'
           - 'https://www.w3.org/2018/credentials/examples/v1'
+          - 'https://w3id.org/vc-revocation-list-2020/v1'
+        "credentialStatus":
+          "id": "http://example.gov/credentials/3732#2"
+          "type": "RevocationList2020Status"
+          "revocationListIndex": "2"
+          "revocationListCredential": "https://example.github.io/example-repo/revocation-credential.jsonld"
         credentialSubject:
           degree:
             name: Bachelor of Science and Arts
@@ -501,3 +653,130 @@ components:
         token:
           description: Bearer token for authenticaiton with issuer endpoints.
           type: string
+    RevocationListCreateRequest:
+      additionalProperties: false
+      description: Configuration for publishing a RevocationList credential
+      example:
+        id: 8858b74c-564f-44d6-942a-06ee4e2f2944
+        listSize: 1000000
+        publishMethod: github
+        allowRevocationReversal: true
+        gitHubOptions:
+          token: <github-access-token>
+          owner: Organization
+          repo: RepositoryName
+          branch: Branch
+          path: revocation-credential.jsonld
+          useGitHubPages: true
+      properties:
+        id:
+          description: Identifier for the revocation list
+          type: string
+        listSize:
+          description: Size of the list for the associated revocation credential
+          type: number
+        publishMethod:
+          description: Method used to publish and update RevocationList credentials
+          type: string
+          enum:
+            - github
+            - mongo
+        allowRevocationReversal:
+          description: Whether the API should allow revoked credentials to be unrevoked.
+          type: boolean
+        gitHubOptions:
+          $ref: "#/components/schemas/GitHubOptions"
+        mongoOptions:
+          $ref: '#/components/schemas/MongoOptions'
+    MongoOptions:
+      additionalProperties: false
+      description: Object containing options for hosting the revocation credential on the vc-http-api MongoDB
+      example:
+        credentialId: 'f0a910f8-697d-4f4e-83c4-ea06e54aa094'
+      properties:
+        credentialId:
+          description: Id under which to store the revoked credential. Must be unique.
+          type: string
+    GitHubOptions:
+      additionalProperties: false
+      description: Configuration options for publishing to GitHub
+      example:
+        token: <github-access-token>
+        owner: Organization
+        repo: RepositoryName
+        branch: Branch
+        path: revocation-credential.jsonld
+        useGitHubPages: true
+      properties:
+        token:
+          description: GitHub access token with write permissions to the selected repository
+          type: string
+        owner:
+          description: Owner/Organization who controls the git repository
+          type: string
+        repo:
+          description: Name of the git repository
+          type: string
+        branch:
+          description: The branch on which to commit updates. Default is 'master'.
+          type: string
+        path:
+          description: The path to the jsonld credential file to update. Default is 'revocation-credential.jsonld'
+          type: string
+        useGitHubPages:
+          description: Whether to use a GitHub pages URL for to point to the published revocation credential
+          type: boolean
+    RevocationListResponse:
+      additionalProperties: false
+      description: Object containing revocation credential initialization result.
+      example:
+        url: https://example.com/revocation-credential.jsonld
+      allOf:
+        - $ref: "#/components/schemas/RevocationListCreateRequest"
+        - properties:
+            url:
+              type: string
+              description: URL of the deployed revocation credential
+    RevocationListArrayResponse:
+      additionalProperties: false
+      description: Object containing an array of all revocation configurations
+      example:
+        revocations:
+          - id: 8858b74c-564f-44d6-942a-06ee4e2f2944
+            url: https://example.com/revocation-credential.jsonld
+            listSize: 1000000
+            publishMethod: github
+            gitHubOptions:
+              token: <github-access-token>
+              owner: Organization
+              repo: RepositoryName
+              branch: Branch
+              path: revocation-credential.jsonld
+      properties:
+        revocations:
+          description: An array of revocation config objects
+          type: array
+          items:
+            $ref: "#/components/schemas/RevocationListResponse"
+    RevocationStatus:
+      additionalProperties: false
+      description: Object containing the revocation status of the associated index
+      example:
+        revoked: true
+        index: 100
+      properties:
+        revoked:
+          description: Boolean describing whether a credential has been revoked
+          type: boolean
+        index:
+          description: Index corresponding to the revocation status
+          type: integer
+    CheckRevocationRequest:
+      additionalProperties: false
+      description: Object containing the index of the revocation status to be checked.
+      example:
+        index: 100
+      properties:
+        index:
+          description: Integer describing the index of the revocation status to check.
+          type: integer

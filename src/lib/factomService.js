@@ -45,7 +45,7 @@ function getFactomSuiteFrom(did, idSec) {
 
 function issueFactomCredential(credential, options) {
     //verify options
-    if(options && (!options.did || !options.idSec)){
+    if (options && (!options.did || !options.idSec)) {
         return new Promise((resolve, reject) => reject({
             message: "Incorrect DID options supplied."
         }));

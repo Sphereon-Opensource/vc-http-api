@@ -1,3 +1,7 @@
+import InvalidRequestError from "./error/InvalidRequestError";
+import ResourceNotFoundError from "./error/ResourceNotFoundError";
+import ResourceConflictError from "./error/ResourceConflictError";
+
 /**	Creates a callback that proxies node callback style arguments to an Express Response object.
  *	@param {express.Response} res	Express HTTP Response
  *	@param {number} [status=200]	Status code to send on success
@@ -76,4 +80,17 @@ export function handleVerificationError(res, err){
 	}
 	res.status(500).send({message: 'Could not verify credential.'});
 	return;
+}
+
+export function handleErrorResponse(res, err){
+	if (err instanceof InvalidRequestError) {
+		return res.status(400).send({message: err.message});
+	}
+	if (err instanceof ResourceNotFoundError) {
+		return res.status(404).send({message: err.message});
+	}
+	if (err instanceof ResourceConflictError){
+		return res.status(403).send({message: err.message});
+	}
+	res.status(500).send({message: err.message});
 }

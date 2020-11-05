@@ -3,8 +3,10 @@ import passport from 'passport';
 import issuer from './issuer';
 import verifier from './verifier';
 import holder from './holder';
+import revocation from "./revocation";
 import auth from './auth';
 import apiInfo from '../resources/apiInfo';
+import credentials from "./credentials";
 
 
 export default ({config}) => {
@@ -18,6 +20,12 @@ export default ({config}) => {
 
     // mount the holder resource
     api.use('/prove', holder({config}));
+
+    // mount the revocation resource
+    api.use('/revocations', passport.authenticate('bearer', {session: false}), revocation({config}));
+
+    // mount the mongo credential resource
+    api.use('/credentials', credentials({config}));
 
     // mount authentication resource
     api.use('/auth', auth({config}));

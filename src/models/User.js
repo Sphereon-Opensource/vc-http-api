@@ -1,6 +1,7 @@
 import mongoose, {Schema} from 'mongoose';
 import bcrypt from 'bcrypt';
 import {fieldEncryption} from 'mongoose-field-encryption';
+import RevocationConfigSchema from "./schemas/RevocationConfig";
 import {encryptionSecret} from '../resources/config/databaseConfig.json';
 
 const SALT_WORK_FACTOR = 10;
@@ -10,6 +11,7 @@ const UserSchema = new Schema({
     password: {type: String, required: true},
     did: {type: String, required: false},
     idSec: {type: String, required: false},
+    revocationConfigs: [RevocationConfigSchema],
 });
 
 UserSchema.plugin(fieldEncryption, {fields: ['idSec'], secret: encryptionSecret});
