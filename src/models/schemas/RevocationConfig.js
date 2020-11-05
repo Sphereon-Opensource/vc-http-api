@@ -28,6 +28,7 @@ const RevocationConfigSchema = new Schema({
     },
     url: {type: String, required: false},
     listSize: {type: Number, required: true},
+    allowRevocationReversal: {type: String, required: false, default: true},
 });
 
 RevocationConfigSchema.methods.toJSON = function() {

@@ -95,8 +95,8 @@ export default ({config}) => {
             return handleErrorResponse(res, err);
         }
         const {revocationConfig, revocationIndex, revoked} = updateRevocationRequest;
-        if (!revoked && !config.allowRevocationReversal) {
-            const message = 'Reversing a revocation is not allowed.';
+        if (!revoked && !revocationConfig.allowRevocationReversal) {
+            const message = `Reversing a revocation is not allowed by configuration with id: ${revocationConfig.id}`;
             return res.status(400).send({message});
         }
         const {did, idSec} = req.user;

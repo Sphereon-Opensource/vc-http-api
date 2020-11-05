@@ -3,6 +3,5 @@
 	"bodyLimit": "100kb",
 	"corsHeaders": ["Link"],
 	"registrationActive": true,
-	"baseUrl": "http://localhost:8080",
-	"allowRevocationReversal": true
+	"baseUrl": "http://localhost:8080"
 }

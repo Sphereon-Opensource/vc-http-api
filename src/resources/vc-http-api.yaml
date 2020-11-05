@@ -660,6 +660,7 @@ components:
         id: 8858b74c-564f-44d6-942a-06ee4e2f2944
         listSize: 1000000
         publishMethod: github
+        allowRevocationReversal: true
         gitHubOptions:
           token: <github-access-token>
           owner: Organization
@@ -680,6 +681,9 @@ components:
           enum:
             - github
             - mongo
+        allowRevocationReversal:
+          description: Whether the API should allow revoked credentials to be unrevoked.
+          type: boolean
         gitHubOptions:
           $ref: "#/components/schemas/GitHubOptions"
         mongoOptions:
