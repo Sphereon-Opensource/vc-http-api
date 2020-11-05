@@ -74,10 +74,6 @@ export default ({config}) => {
             const message = `No revocation configuration found for id: ${req.params.id}`;
             return res.status(404).send({message});
         }
-        if (!revocationConfig.url) {
-            const message = "Revocation credential not initialized.";
-            return res.status(400).send({message})
-        }
         let revocationIndex;
         try {
             revocationIndex = parseInt(index);
@@ -101,10 +97,6 @@ export default ({config}) => {
         if (!revocationConfig) {
             const message = `No revocation configuration found for id: ${req.params.id}`;
             return res.status(404).send({message});
-        }
-        if (!revocationConfig.url) {
-            const message = "Revocation credential does not have a deployment URL.";
-            res.status(500).send({message})
         }
         let revocationIndex;
         try {
