@@ -34,7 +34,7 @@ export default ({config}) => {
                 revocationListVC = await issueFactomCredential(revocationListCred, {did, idSec});
                 revocationConfig.url = await publishRevocationCredential(revocationListVC, revocationConfig);
             } catch (err) {
-                handleErrorResponse(res, err);
+                return handleErrorResponse(res, err);
             }
             user.revocationConfigs.push(revocationConfig);
             try {
