@@ -58,7 +58,7 @@ export default ({config}) => {
         const {id: configId} = req.params;
         const revocationConfig = user.revocationConfigs.find(config => config.id === configId);
         if (!revocationConfig) {
-            const message = `Could not find revocation for authenticated user with id: ${configId}`;
+            const message = `Could not find revocation with id: ${configId} for authenticated user.`;
             return res.status(404).send({message});
         }
         return res.status(200).send(revocationConfig);
