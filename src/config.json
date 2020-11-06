@@ -3,5 +3,5 @@
 	"bodyLimit": "100kb",
 	"corsHeaders": ["Link"],
 	"registrationActive": true,
-	"baseUrl": "http://localhost:8080"
+	"baseUrl": "https://vc-api.sphereon.io"
 }
