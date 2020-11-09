@@ -72,8 +72,13 @@ async function verifyPresentation(verifiablePresentation, challenge) {
         challenge
     }).then(result => {
         let checks = ['proof'];
-        if (revocationChecks.every(result => result.revocation)) {
-            checks = [...checks, 'revocation']
+        if (revocationChecks.length) {
+            if(revocationChecks.every(result => result.revocation)){
+                checks = [...checks, 'revocation']
+            }
+            else {
+                throw {code: 500, message: "One or more credentials in the presentation has been revoked"};
+            }
         }
         if (result.verified) {
             return {
