@@ -65,6 +65,10 @@ paths:
       responses:
         '200':
           description: success!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssuerConfig"
         '400':
           description: invalid input!
         '500':

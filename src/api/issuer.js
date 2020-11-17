@@ -103,7 +103,7 @@ export default ({config}) => {
                     Originating message: ${err.message}`;
             return res.status(500).send({message});
         }
-        res.status(200).send();
+        res.status(200).send(fullIssuerConfig);
     });
 
     api.get('/:id', (req, res) => {
