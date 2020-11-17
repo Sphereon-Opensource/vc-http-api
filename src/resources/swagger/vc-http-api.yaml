@@ -49,6 +49,84 @@ paths:
           description: invalid input!
         "500":
           description: error!
+  /issue:
+    post:
+      tags:
+        - Issuer
+      summary: Create a new issue configuration.
+      description: Creates a new issue configuration under the authenticated user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssuerConfig"
+      responses:
+        '200':
+          description: success!
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+  /issue/{id}:
+    get:
+      tags:
+        - Issuer
+      summary: Get an issuer configuration by id.
+      description: Gets an issuer configuration associated with the authenticated user
+      parameters:
+        - name: id
+          in: path
+          description: Issuer id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: success!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssuerConfig"
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+  /issue/{id}/credentials:
+    post:
+      tags:
+        - Issuer
+      summary: Issues a credential via the specified config.
+      description: Issues a credential via the specified config parameters and returns it in the response body.
+      parameters:
+        - name: id
+          in: path
+          description: Issuer id
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComposeAndIssueRequest"
+        description: Parameters for issuing the credential.
+      responses:
+        "201":
+          description: Credential successfully issued!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueCredentialResponse"
+        "400":
+          description: invalid input!
+        "500":
+          description: error!
   /prove/presentations:
     post:
       tags:
@@ -780,3 +858,48 @@ components:
         index:
           description: Integer describing the index of the revocation status to check.
           type: integer
+    IssuerConfig:
+      additionalProperties: false
+      description: Configuration options for issuing credentials
+      example:
+        id: example-issuer-config
+        context:
+          - 'https://www.w3.org/2018/credentials/examples/v1'
+        type:
+          - UniversityDegreeCredential
+        revocationListCredential: "https://example.github.io/example-repo/revocation-credential.jsonld"
+      properties:
+        id:
+          description: The id used to reference the configuration.
+          type: string
+        contexts:
+          description: >
+            An array of contexts to be used in the issued credential. If not included, the W3C VC context will be added
+            as the first value (https://www.w3.org/2018/credentials/v1). If revocationListCredential is specified, then
+            the RevocationList2020 context will also be automatically added if not already present
+            (https://w3id.org/vc-revocation-list-2020/v1).
+          type: array
+        type:
+          description: >
+            The JSONLD type objects used in the credential. They must be defined in the added contexts. If
+            "VerifiableCredential" is not the first type, it will be automatically added.
+          type: array
+        revocationListCredential:
+          description: A URL pointing to the revocationListCredential to be used for revoking credentials.
+          type: string
+    ComposeAndIssueRequest:
+      additionalProperties: false
+      description: Properties required to issue a credential with an issuer config
+      example:
+        credentialSubject:
+            degree:
+              name: Bachelor of Science and Arts
+              type: BachelorDegree
+            id: "did:example:123"
+        revocationListIndex: "2"
+      properties:
+        revocationListIndex:
+          description: >
+            An arbitrary size integer greater than or equal to 0, expressed as a string.
+            The value identifies the bit position of the revocation status of the verifiable credential.
+          type: string

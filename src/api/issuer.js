@@ -1,7 +1,7 @@
 import {Router} from 'express';
-import {handleIssuanceError} from '../lib/util';
+import {handleErrorResponse, handleIssuanceError} from '../lib/util';
+import {constructCredentialWithConfig, fillDefaultValues, validateIssuerConfig} from '../lib/issuer';
 
-const util = require('util');
 const {assertValidIssuanceCredential, getRequestedIssuer} = require('../lib/credentialService');
 const factomDid = require('../resources/did/factomDid.json');
 const {issueFactomCredential} = require('../lib/factomService');
@@ -62,7 +62,7 @@ export default ({config}) => {
                     .catch(err => handleIssuanceError(res, err, req));
             default:
                 const {did, idSec} = req.user;
-                if(!did || !idSec){
+                if (!did || !idSec) {
                     return res.status(400).send("No DID found for user");
                 }
                 return issueFactomCredential(credential, {did, idSec})
@@ -79,6 +79,63 @@ export default ({config}) => {
         // not yet implemented
 
         res.status(501).send({message: "Not yet implemented."});
+    });
+
+    api.post('', async (req, res) => {
+        const issuerConfig = req.body;
+        const user = req.user;
+        try {
+            validateIssuerConfig(issuerConfig);
+        } catch (err) {
+            handleErrorResponse(res, err);
+            return;
+        }
+        if (user.issuerConfigs.find(config => config.id === issuerConfig.id)) {
+            const message = `Issuer config with id: ${issuerConfig.id} already exists for authenticated user`;
+            res.status(403).send({message});
+        }
+        const fullIssuerConfig = fillDefaultValues(issuerConfig);
+        user.issuerConfigs.push(fullIssuerConfig);
+        try {
+            await user.save()
+        } catch (err) {
+            const message = `Could not save revocation config to authenticated user. 
+                    Originating message: ${err.message}`;
+            return res.status(500).send({message});
+        }
+        res.status(200).send();
+    });
+
+    api.get('/:id', (req, res) => {
+        const user = req.user;
+        const {id: configId} = req.params;
+        const issuerConfig = user.issuerConfigs.find(config => config.id === configId);
+        if (!issuerConfig) {
+            const message = `Could not find issuer config with id: ${configId} for authenticated user.`;
+            return res.status(404).send({message});
+        }
+        return res.status(200).send(issuerConfig);
+    });
+
+    api.post('/:id/credentials', (req, res) => {
+        const user = req.user;
+        const {id: configId} = req.params;
+        const {credentialSubject, revocationListIndex} = req.body;
+        const issuerConfig = user.issuerConfigs.find(config => config.id === configId);
+        if (!issuerConfig) {
+            const message = `Could not find issuer config with id: ${configId} for authenticated user.`;
+            return res.status(404).send({message});
+        }
+        const {did, idSec} = user;
+        const credential = constructCredentialWithConfig({
+            credentialSubject,
+            revocationListIndex,
+            did,
+            config: issuerConfig
+        });
+        return issueFactomCredential(credential, {did, idSec})
+            .then(result => res.status(201).send(result))
+            .catch(err => handleIssuanceError(res, err));
     });
 
     return api;
