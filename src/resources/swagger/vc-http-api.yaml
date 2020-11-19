@@ -868,8 +868,10 @@ components:
       example:
         id: example-issuer-config
         context:
+          - 'https://www.w3.org/2018/credentials/v1'
           - 'https://www.w3.org/2018/credentials/examples/v1'
         type:
+          - VerifiableCredential
           - UniversityDegreeCredential
         revocationListCredential: "https://example.github.io/example-repo/revocation-credential.jsonld"
       properties:
@@ -878,15 +880,14 @@ components:
           type: string
         contexts:
           description: >
-            An array of contexts to be used in the issued credential. If not included, the W3C VC context will be added
-            as the first value (https://www.w3.org/2018/credentials/v1). If revocationListCredential is specified, then
-            the RevocationList2020 context will also be automatically added if not already present
-            (https://w3id.org/vc-revocation-list-2020/v1).
+            An array of contexts to be used in the issued credential. The first value must be
+            the V1 W3C context for VCs (https://www.w3.org/2018/credentials/v1). If revocationListCredential is
+            specified, then the RevocationList2020 context must be in the array (https://w3id.org/vc-revocation-list-2020/v1).
           type: array
         type:
           description: >
-            The JSONLD type objects used in the credential. They must be defined in the added contexts. If
-            "VerifiableCredential" is not the first type, it will be automatically added.
+            The JSONLD type objects used in the credential. They must be defined in the added contexts.
+            "VerifiableCredential" must be the first type.
           type: array
         revocationListCredential:
           description: A URL pointing to the revocationListCredential to be used for revoking credentials.
