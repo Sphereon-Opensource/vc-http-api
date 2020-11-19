@@ -19,8 +19,7 @@ export default ({config}) => {
             const message = `Issuer config with id: ${issuerConfig.id} already exists for authenticated user`;
             res.status(403).send({message});
         }
-        const fullIssuerConfig = fillDefaultValues(issuerConfig);
-        user.issuerConfigs.push(fullIssuerConfig);
+        user.issuerConfigs.push(issuerConfig);
         try {
             await user.save()
         } catch (err) {
