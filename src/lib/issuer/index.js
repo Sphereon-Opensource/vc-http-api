@@ -19,8 +19,8 @@ const validateIssuerConfig = issuerConfig => {
 };
 
 const fillDefaultValues = issuerConfig => {
-    if (!issuerConfig.context.includes(W3C_VC_CONTEXT_V1)) {
-        issuerConfig.context = [W3C_VC_CONTEXT_V1, ...issuerConfig.context];
+    if (issuerConfig.context[0] !== W3C_VC_CONTEXT_V1) {
+        issuerConfig.context = [W3C_VC_CONTEXT_V1, ...issuerConfig.context.filter(url => url !== W3C_VC_CONTEXT_V1)];
     }
     if (issuerConfig.revocationListCredential && !issuerConfig.context.includes(RevocationList2020.CONTEXT)) {
         issuerConfig.context = [...issuerConfig.context, RevocationList2020.CONTEXT];
