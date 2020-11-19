@@ -900,10 +900,10 @@ components:
               name: Bachelor of Science and Arts
               type: BachelorDegree
             id: "did:example:123"
-        revocationListIndex: "2"
+        revocationListIndex: 2
       properties:
         revocationListIndex:
           description: >
-            An arbitrary size integer greater than or equal to 0, expressed as a string.
+            An arbitrary size integer greater than or equal to 0.
             The value identifies the bit position of the revocation status of the verifiable credential.
-          type: string
+          type: number

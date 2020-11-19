@@ -54,7 +54,7 @@ export default ({config}) => {
         const {did, idSec} = user;
         const credential = constructCredentialWithConfig({
             credentialSubject,
-            revocationListIndex,
+            revocationListIndex: revocationListIndex.toString(),
             did,
             config: issuerConfig
         });
