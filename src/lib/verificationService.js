@@ -1,8 +1,8 @@
 import {verifyCredentialWithRevocation} from "./revocation";
 import revocation from "../api/revocation";
 
-const {getDidDocument} = require('./didDocumentService');
-const {extractDidFromVerificationMethod} = require('./didDocumentService');
+const {getDidDocument} = require('./did/resolver');
+const {extractDidFromVerificationMethod} = require('./did/resolver');
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
 const {documentLoader} = require('./customDocumentLoader');
 const vc = require('vc-js');

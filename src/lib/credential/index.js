@@ -1,4 +1,4 @@
-import {validateAssertionMethod} from '../didDocumentService';
+import {validateAssertionMethod} from '../did/resolver';
 import InvalidCredentialStructureError from "../error/InvalidCredentialStructureError";
 import factomDid from '../../resources/did/factomDid.json';
 import veresOneDid from '../../resources/did/veresOneDid.json';

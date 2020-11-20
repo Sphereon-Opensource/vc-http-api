@@ -1,6 +1,6 @@
 import passport from 'passport';
 import {Router} from 'express';
-import {DidMethods, Network, registerNewDid} from "../lib/registrarService";
+import {DidMethods, Network, registerNewDid} from "../lib/did/registrar";
 import User from '../models/User';
 import factomService from '../lib/factomService';
 

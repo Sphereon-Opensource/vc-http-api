@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const Promise = require('promise');
-const CachedDidDocuments = require('../resources/cache/CachedDidDocuments.json');
+const CachedDidDocuments = require('../../resources/cache/CachedDidDocuments.json');
 
 const SPHEREON_UNIRESOLVER_URL = "https://uniresolver.sphereon.io//1.0/identifiers";
 const PUBLIC_UNIRESOLVER_URL = "https://uniresolver.io/1.0/identifiers";

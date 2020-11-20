@@ -1,4 +1,4 @@
-import {getDidDocument} from './didDocumentService';
+import {getDidDocument} from './did/resolver';
 
 const {extendContextLoader} = require('jsonld-signatures');
 const customContexts = require('../resources/cache/customContexts.json');

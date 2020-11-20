@@ -1,4 +1,4 @@
-import {registrar, driver} from '../resources/config/registrarConfig.json';
+import {registrar, driver} from '../../resources/config/registrarConfig.json';
 import base58 from 'bs58';
 import crypto from 'crypto';
 import fetch from 'node-fetch';
