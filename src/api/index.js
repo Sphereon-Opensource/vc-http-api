@@ -7,7 +7,6 @@ import revocation from "./revocation";
 import auth from './auth';
 import apiInfo from '../resources/apiInfo';
 import credentials from "./credentials";
-import issuerTemplates from "./issuerTemplates";
 
 
 export default ({config}) => {
@@ -15,9 +14,6 @@ export default ({config}) => {
 
     // mount the issuer resource
     api.use('/issue', passport.authenticate('bearer', {session: false}), issuer({config}));
-
-    // mount the issue-templates resource
-    api.use('/issue-templates', passport.authenticate('bearer', {session: false}), issuerTemplates({config}));
 
     // mount the verifier resource
     api.use('/verify', verifier({config}));

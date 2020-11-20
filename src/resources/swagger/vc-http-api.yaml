@@ -49,7 +49,7 @@ paths:
           description: invalid input!
         "500":
           description: error!
-  /issue-templates:
+  /issue/templates:
     post:
       tags:
         - Issuer
@@ -73,7 +73,7 @@ paths:
           description: invalid input!
         '500':
           description: error!
-  /issue-templates/{id}:
+  /issue/templates/{id}:
     get:
       tags:
         - Issuer
@@ -99,7 +99,7 @@ paths:
           description: invalid input!
         '500':
           description: error!
-  /issue-templates/{id}/credentials:
+  /issue/templates/{id}/credentials:
     post:
       tags:
         - Issuer
