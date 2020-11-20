@@ -2,7 +2,7 @@ import {Router} from 'express';
 import {handleIssuanceError} from '../lib/util';
 
 const util = require('util');
-const {assertValidIssuanceCredential, getRequestedIssuer} = require('../lib/credentialService');
+const {assertValidIssuanceCredential, getRequestedIssuer} = require('../lib/credential');
 const factomDid = require('../resources/did/factomDid.json');
 const {issueFactomCredential} = require('../lib/factomService');
 const veresOneDid = require('../resources/did/veresOneDid.json');

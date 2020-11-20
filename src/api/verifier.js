@@ -2,7 +2,7 @@ import {Router} from 'express';
 import {handleVerificationError} from '../lib/util';
 
 import {verifyCredential, verifyPresentation} from '../lib/verificationService';
-const {verifyCredentialStructure} = require('../lib/credentialService');
+const {verifyCredentialStructure} = require('../lib/credential');
 
 export default ({ config }) => {
 	let api = Router();

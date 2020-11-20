@@ -2,7 +2,7 @@ import {Router} from 'express';
 
 const {extractDidFromVerificationMethod} = require('../lib/didDocumentService');
 const veresOneDid = require('../resources/did/veresOneDid.json');
-const {verifyCredentialStructure} = require('../lib/credentialService');
+const {verifyCredentialStructure} = require('../lib/credential');
 const {proveFactomPresentation, composeFactomPresentation} = require('../lib/factomService');
 const factomDid = require('../resources/did/factomDid.json');
 
