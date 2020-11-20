@@ -15,6 +15,12 @@ const PublishMethod = Object.freeze({
     GITHUB: 'github',
 });
 
+const RevocationList2020 =Object.freeze({
+    CONTEXT: 'https://w3id.org/vc-revocation-list-2020/v1',
+    STATUS_TYPE: 'RevocationList2020Status',
+    CREDENTIAL_TYPE: 'RevocationList2020Credential'
+});
+
 const validateRevocationConfig = async revocationConfig => {
     const {publishMethod, gitHubOptions, mongoOptions, listSize, id} = revocationConfig;
     if (!listSize || typeof listSize !== "number") {
@@ -142,6 +148,7 @@ const _loadRevocationListCredential = vc => {
 };
 
 export {
+    RevocationList2020,
     validateRevocationConfig,
     createRevocationCredential,
     publishRevocationCredential,
