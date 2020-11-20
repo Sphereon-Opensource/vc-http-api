@@ -91,14 +91,14 @@ export default ({config}) => {
             return;
         }
         if (user.issuerConfigs.find(config => config.id === issuerConfig.id)) {
-            const message = `Issuer config with id: ${issuerConfig.id} already exists for authenticated user`;
+            const message = `Issuer config template with id: ${issuerConfig.id} already exists for authenticated user`;
             res.status(403).send({message});
         }
         user.issuerConfigs.push(issuerConfig);
         try {
             await user.save()
         } catch (err) {
-            const message = `Could not save revocation config to authenticated user. 
+            const message = `Could not save issuer template config to authenticated user. 
                     Originating message: ${err.message}`;
             return res.status(500).send({message});
         }
@@ -110,7 +110,7 @@ export default ({config}) => {
         const {id: configId} = req.params;
         const issuerConfig = user.issuerConfigs.find(config => config.id === configId);
         if (!issuerConfig) {
-            const message = `Could not find issuer config with id: ${configId} for authenticated user.`;
+            const message = `Could not find issuer config template with id: ${configId} for authenticated user.`;
             return res.status(404).send({message});
         }
         return res.status(200).send(issuerConfig);
@@ -122,7 +122,7 @@ export default ({config}) => {
         const {credentialSubject, revocationListIndex} = req.body;
         const issuerConfig = user.issuerConfigs.find(config => config.id === configId);
         if (!issuerConfig) {
-            const message = `Could not find issuer config with id: ${configId} for authenticated user.`;
+            const message = `Could not find issuer config template with id: ${configId} for authenticated user.`;
             return res.status(404).send({message});
         }
         const {did, idSec} = user;
