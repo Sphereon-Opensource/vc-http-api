@@ -5,7 +5,7 @@ const {getDidDocument} = require('./did/resolver');
 const {extractDidFromVerificationMethod} = require('./did/resolver');
 const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
 const {documentLoader} = require('./customDocumentLoader');
-const vc = require('vc-js');
+const vcjs = require('vc-js');
 
 async function verifyCredential(verifiableCredential) {
     const verify = await _getVerificationFunction(verifiableCredential);
@@ -65,7 +65,7 @@ async function verifyPresentation(verifiablePresentation, challenge) {
 
     //attempt to fetch did document for presentation
     const presentationSuite = await getSuite(proof);
-    return vc.verify({
+    return vcjs.verify({
         presentation: verifiablePresentation,
         suite: [...credentialSuites, presentationSuite],
         documentLoader,
@@ -126,7 +126,7 @@ const _getVerificationFunction = async (vc) => {
     }
     const {proof} = vc;
     const suite = await getSuite(proof);
-    return credential => vc.verifyCredential({credential, suite, documentLoader});
+    return credential => vcjs.verifyCredential({credential, suite, documentLoader});
 }
 
 export {verifyCredential, verifyPresentation, getSuite};
