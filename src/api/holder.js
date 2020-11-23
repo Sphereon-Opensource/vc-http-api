@@ -1,10 +1,8 @@
 import {Router} from 'express';
-
-const {extractDidFromVerificationMethod} = require('../lib/did/resolver');
-const veresOneDid = require('../resources/did/veresOneDid.json');
-const {verifyCredentialStructure} = require('../lib/credential');
-const {proveFactomPresentation, composeFactomPresentation} = require('../lib/factomService');
-const factomDid = require('../resources/did/factomDid.json');
+import {resolver} from '../lib/did';
+import {verifyCredentialStructure} from '../lib/credential';
+import {factom} from '../lib/issuer';
+import factomDid from '../resources/did/factomDid.json';
 
 export default ({ config }) => {
     let api = Router();
@@ -15,8 +13,8 @@ export default ({ config }) => {
            res.status(400).send("invalid input!");
            return;
        }
-       if(!options || extractDidFromVerificationMethod(options.verificationMethod) === factomDid.identity.did){
-           return proveFactomPresentation(presentation)
+       if(!options || resolver.extractDidFromVerificationMethod(options.verificationMethod) === factomDid.identity.did){
+           return factom.proveFactomPresentation(presentation)
                .then(pres => res.status(200).send(pres))
                .catch(err => res.status(500).send(err));
        }
@@ -36,7 +34,7 @@ export default ({ config }) => {
 
         if(!options || options.holder === factomDid.identity.did){
             try{
-                const pres = composeFactomPresentation(verifiableCredential);
+                const pres = factom.composeFactomPresentation(verifiableCredential);
                 res.status(200).send(pres);
             } catch(err){
                 res.status(500).send(err);

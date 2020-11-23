@@ -1,15 +1,16 @@
-import {verifyCredentialWithRevocation} from "./revocation";
-import revocation from "../api/revocation";
+import {verifyCredentialWithRevocation} from './revocation';
+import revocation from '../api/revocation';
+import {documentLoader} from './credential';
+import {resolver} from './did';
+import VerificationError from './error/VerificationError';
+import {Ed25519KeyPair} from 'crypto-ld';
+import {suites} from 'jsonld-signatures';
+import vcjs from 'vc-js';
+import InvalidRequestError from './error/InvalidRequestError';
+import {parseVcJsVerificationError} from './util';
 
-const {getDidDocument} = require('./did/resolver');
-const {extractDidFromVerificationMethod} = require('./did/resolver');
-const {Ed25519KeyPair, suites: {Ed25519Signature2018}} = require('jsonld-signatures');
-const {documentLoader} = require('./customDocumentLoader');
-const vcjs = require('vc-js');
-
-async function verifyCredential(verifiableCredential) {
+const verifyCredential = async (verifiableCredential) => {
     const verify = await _getVerificationFunction(verifiableCredential);
-
     return verify(verifiableCredential)
         .then(result => {
             if (result.verified) {
@@ -23,30 +24,27 @@ async function verifyCredential(verifiableCredential) {
                     errors: [],
                 };
             }
-            if (result.error) {
-                throw result.error;
-            }
-            throw {code: 500, message: 'Could not verify.'};
+            parseVcJsVerificationError(result.error);
         });
-}
+};
 
-async function getSuite(proof) {
+const getSuite = async proof => {
     const {verificationMethod} = proof;
     if (!verificationMethod) {
-        throw {code: 400, message: 'Invalid proof!'};
+        throw  new InvalidRequestError('Invalid proof!');
     }
-    const did = extractDidFromVerificationMethod(verificationMethod);
-    return getDidDocument(did).then(didDocument => {
+    const did = resolver.extractDidFromVerificationMethod(verificationMethod);
+    return resolver.getDidDocument(did).then(didDocument => {
         const key = getKeyForVerificationMethod(verificationMethod, didDocument);
         const importKey = new Ed25519KeyPair({...key});
-        return new Ed25519Signature2018({
+        return new suites.Ed25519Signature2018({
             verificationMethod: key.id,
             key: importKey,
         });
     });
-}
+};
 
-async function verifyPresentation(verifiablePresentation, challenge) {
+const verifyPresentation = async (verifiablePresentation, challenge) => {
     const {proof} = verifiablePresentation;
     //attempt to fetch did document for credentials
     const {verifiableCredential} = verifiablePresentation;
@@ -63,7 +61,7 @@ async function verifyPresentation(verifiablePresentation, challenge) {
         );
     }
 
-    //attempt to fetch did document for presentation
+    //attempt to fetch suite for presentation
     const presentationSuite = await getSuite(proof);
     return vcjs.verify({
         presentation: verifiablePresentation,
@@ -73,11 +71,10 @@ async function verifyPresentation(verifiablePresentation, challenge) {
     }).then(result => {
         let checks = ['proof'];
         if (revocationChecks.length) {
-            if(revocationChecks.every(result => result.revocation)){
-                checks = [...checks, 'revocation']
-            }
-            else {
-                throw {code: 500, message: "One or more credentials in the presentation has been revoked"};
+            if (revocationChecks.every(result => result.revocation)) {
+                checks = [...checks, 'revocation'];
+            } else {
+                throw new VerificationError('One or more credentials in the presentation has been revoked');
             }
         }
         if (result.verified) {
@@ -87,15 +84,12 @@ async function verifyPresentation(verifiablePresentation, challenge) {
                 errors: [],
             };
         } else {
-            if (result.error) {
-                throw result.error;
-            }
-            throw {code: 500, message: 'Could not verify.'};
+            parseVcJsVerificationError(result.error);
         }
     });
 }
 
-function getKeyForVerificationMethod(verificationMethod, didDocument) {
+const getKeyForVerificationMethod = (verificationMethod, didDocument) => {
     if (didDocument.publicKey) {
         const {publicKey} = didDocument;
         const key = publicKey.find(pk => pk.id === verificationMethod);
@@ -117,8 +111,8 @@ function getKeyForVerificationMethod(verificationMethod, didDocument) {
             return key;
         }
     }
-    throw {code: 400, message: 'Could not find verification method in DID document'};
-}
+    throw new InvalidRequestError('Could not find verification method in DID document');
+};
 
 const _getVerificationFunction = async (vc) => {
     if (vc.credentialStatus) {
@@ -126,7 +120,8 @@ const _getVerificationFunction = async (vc) => {
     }
     const {proof} = vc;
     const suite = await getSuite(proof);
-    return credential => vcjs.verifyCredential({credential, suite, documentLoader});
+    return credential => vcjs.verifyCredential({credential, suite, documentLoader})
+        .catch(parseVcJsVerificationError);
 }
 
 export {verifyCredential, verifyPresentation, getSuite};

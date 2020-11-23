@@ -1,11 +1,10 @@
 import {assertRevocationList2020Context, checkStatus, createList, decodeList} from 'vc-revocation-list';
 import vcjs from 'vc-js';
-import Promise from 'promise';
 import publishing from './publishing';
-import {documentLoader} from '../customDocumentLoader';
+import {documentLoader} from '../credential';
 import RevocationPublishError from '../error/RevocationPublishError';
 import InvalidRequestError from '../error/InvalidRequestError';
-import {getSuite} from "../verificationService";
+import {getSuite} from "../verification";
 import ResourceNotFoundError from '../error/ResourceNotFoundError';
 import CredentialLoadError from '../error/CredentialLoadError';
 import InvalidRevocationOptions from "../error/InvalidRevocationOptions";

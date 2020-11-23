@@ -3,10 +3,10 @@ import passport from 'passport';
 import issuer from './issuer';
 import verifier from './verifier';
 import holder from './holder';
-import revocation from "./revocation";
+import revocation from './revocation';
 import auth from './auth';
 import apiInfo from '../resources/apiInfo';
-import credentials from "./credentials";
+import credentials from './credentials';
 
 
 export default ({config}) => {

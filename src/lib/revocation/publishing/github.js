@@ -1,5 +1,4 @@
 import GitHubApi from 'github-api';
-import Promise from 'promise';
 import InvalidRevocationOptions from "../../error/InvalidRevocationOptions";
 import CredentialLoadError from "../../error/CredentialLoadError";
 

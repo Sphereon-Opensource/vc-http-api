@@ -12,7 +12,7 @@ const DidMethods = Object.freeze({
     FACTOM: 'factom',
 })
 
-function registerNewDid(username, publicKeyBase58, network) {
+const registerNewDid = (username, publicKeyBase58, network) => {
     const registerUrl = `${registrar.url}/${driver.factom.registerEndpoint}?driverId=${driver.factom.id}`;
     const extIds = [
         crypto.createHash('sha256').update(Buffer.from(username)).digest('hex'),
@@ -36,6 +36,6 @@ function registerNewDid(username, publicKeyBase58, network) {
         },
         body: JSON.stringify(body),
     }).then(res => res.json());
-}
+};
 
-export {registerNewDid, Network, DidMethods};
+export default {registerNewDid, Network, DidMethods};

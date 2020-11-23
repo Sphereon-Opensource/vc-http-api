@@ -1,4 +1,4 @@
-import {Router} from "express";
+import {Router} from 'express';
 import {
     checkRevocationStatus,
     createRevocationCredential,
@@ -6,11 +6,11 @@ import {
     publishRevocationCredential,
     updateRevocationCredential,
     validateRevocationConfig
-} from "../lib/revocation";
-import {issueFactomCredential} from "../lib/factomService";
-import {handleErrorResponse} from "../lib/util";
-import ResourceNotFoundError from "../lib/error/ResourceNotFoundError";
-import InvalidRequestError from "../lib/error/InvalidRequestError";
+} from '../lib/revocation';
+import {factom} from '../lib/issuer';
+import {handleErrorResponse} from '../lib/util';
+import ResourceNotFoundError from '../lib/error/ResourceNotFoundError';
+import InvalidRequestError from '../lib/error/InvalidRequestError';
 
 const _parseRevocationRequest = req => {
     const {user, body} = req;
@@ -54,7 +54,7 @@ export default ({config}) => {
             let revocationListCred, revocationListVC;
             try {
                 revocationListCred = await createRevocationCredential(listSize, did);
-                revocationListVC = await issueFactomCredential(revocationListCred, {did, idSec});
+                revocationListVC = await factom.issueFactomCredential(revocationListCred, {did, idSec});
                 revocationConfig.url = await publishRevocationCredential(revocationListVC, revocationConfig);
             } catch (err) {
                 return handleErrorResponse(res, err);
@@ -102,7 +102,7 @@ export default ({config}) => {
         const {did, idSec} = req.user;
         return getRevocationCredential(revocationConfig)
             .then(revocationListVC => updateRevocationCredential(revocationListVC, revocationIndex, revoked))
-            .then(newRevocationListCred => issueFactomCredential(newRevocationListCred, {did, idSec}))
+            .then(newRevocationListCred => factom.issueFactomCredential(newRevocationListCred, {did, idSec}))
             .then(newRevocationListVC => publishRevocationCredential(newRevocationListVC, revocationConfig))
             .then(() => res.status(200).send())
             .catch(err => handleErrorResponse(res, err));

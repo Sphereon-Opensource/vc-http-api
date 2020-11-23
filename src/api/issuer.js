@@ -1,12 +1,10 @@
 import {Router} from 'express';
-import {handleErrorResponse, handleIssuanceError} from '../lib/util';
-import {constructCredentialWithConfig, validateIssuerConfig} from "../lib/issuer";
+import {handleErrorResponse} from '../lib/util';
+import {templates, factom, veresOne} from '../lib/issuer';
+import {assertValidIssuanceCredential, getRequestedIssuer} from'../lib/credential';
+import factomDid from '../resources/did/factomDid.json';
+import veresOneDid from '../resources/did/veresOneDid.json';
 
-const {assertValidIssuanceCredential, getRequestedIssuer} = require('../lib/credentialService');
-const factomDid = require('../resources/did/factomDid.json');
-const {issueFactomCredential} = require('../lib/factomService');
-const veresOneDid = require('../resources/did/veresOneDid.json');
-const {issueVeresCredential} = require('../lib/veresOneService');
 
 export default ({config}) => {
     let api = Router();
@@ -19,7 +17,7 @@ export default ({config}) => {
     */
     api.post('/credentials', async (req, res) => {
         if (!req.body.credential) {
-            res.status(400).send("No credential specified in request");
+            res.status(400).send('No credential specified in request');
         }
 
         const credential = req.body.credential;
@@ -29,7 +27,7 @@ export default ({config}) => {
         try {
             assertValidIssuanceCredential(credential);
         } catch (err) {
-            handleIssuanceError(res, err);
+            handleErrorResponse(res, err);
             return;
         }
 
@@ -42,7 +40,7 @@ export default ({config}) => {
             // else use the requested did
             requestedIssuer = await getRequestedIssuer(options)
                 .catch(err => {
-                    handleIssuanceError(res, err);
+                    handleErrorResponse(res, err);
                     return false;
                 });
         }
@@ -53,21 +51,21 @@ export default ({config}) => {
 
         switch (requestedIssuer) {
             case factomDid.identity.did:
-                return issueFactomCredential(credential)
+                return factom.issueFactomCredential(credential)
                     .then(result => res.status(201).send(result))
-                    .catch(err => handleIssuanceError(res, err));
+                    .catch(err => handleErrorResponse(res, err));
             case veresOneDid.did:
-                return issueVeresCredential(credential)
+                return veresOne.issueVeresCredential(credential)
                     .then(result => res.status(201).send(result))
-                    .catch(err => handleIssuanceError(res, err, req));
+                    .catch(err => handleErrorResponse(res, err, req));
             default:
                 const {did, idSec} = req.user;
                 if (!did || !idSec) {
-                    return res.status(400).send("No DID found for user");
+                    return res.status(400).send('No DID found for user');
                 }
-                return issueFactomCredential(credential, {did, idSec})
+                return factom.issueFactomCredential(credential, {did, idSec})
                     .then(result => res.status(201).send(result))
-                    .catch(err => handleIssuanceError(res, err));
+                    .catch(err => handleErrorResponse(res, err));
         }
     });
 
@@ -78,14 +76,14 @@ export default ({config}) => {
     api.post('/composeAndIssueCredential', (req, res) => {
         // not yet implemented
 
-        res.status(501).send({message: "Not yet implemented."});
+        res.status(501).send({message: 'Not yet implemented.'});
     });
 
     api.post('/templates', async (req, res) => {
         const issuerConfig = req.body;
         const user = req.user;
         try {
-            validateIssuerConfig(issuerConfig);
+            templates.validateIssuerConfig(issuerConfig);
         } catch (err) {
             handleErrorResponse(res, err);
             return;
@@ -126,15 +124,15 @@ export default ({config}) => {
             return res.status(404).send({message});
         }
         const {did, idSec} = user;
-        const credential = constructCredentialWithConfig({
+        const credential = templates.constructCredentialWithConfig({
             credentialSubject,
             revocationListIndex: revocationListIndex && revocationListIndex.toString(),
             did,
             config: issuerConfig
         });
-        return issueFactomCredential(credential, {did, idSec})
+        return factom.issueFactomCredential(credential, {did, idSec})
             .then(result => res.status(201).send(result))
-            .catch(err => handleIssuanceError(res, err));
+            .catch(err => handleErrorResponse(res, err));
     });
 
     return api;

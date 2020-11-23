@@ -1,8 +1,8 @@
 import passport from 'passport';
 import {Router} from 'express';
-import {DidMethods, Network, registerNewDid} from "../lib/did/registrar";
+import {registrar} from '../lib/did';
 import User from '../models/User';
-import factomService from '../lib/factomService';
+import {factom} from '../lib/issuer';
 
 export default ({config}) => {
     let api = Router();
@@ -21,27 +21,28 @@ export default ({config}) => {
 
     api.post('/register', async (req, res) => {
         const {username, password, didOptions} = req.body;
-        const network = didOptions && didOptions.network ? didOptions.network : Network.TESTNET;
-        if (network !== Network.TESTNET && network !== Network.MAINNET) {
+        const network = didOptions && didOptions.network ? didOptions.network : registrar.Network.TESTNET;
+        if (network !== registrar.Network.TESTNET && network !== registrar.Network.MAINNET) {
             const message =
-                `Invalid network specified. Expected ${Network.MAINNET} or ${Network.TESTNET}, but got: ${network}`;
+                `Invalid network specified. Expected ${registrar.Network.MAINNET} or ${registrar.Network.TESTNET},
+                 but got: ${network}`;
             return res.status(400).send({message});
         }
 
-        if (didOptions.didMethod && !Object.values(DidMethods).includes(didOptions.didMethod)) {
+        if (didOptions.didMethod && !Object.values(registrar.DidMethods).includes(didOptions.didMethod)) {
             const message = `Unsupported DID method provided. Received : ${didOptions.didMethod},
-                 Expected one of: ${Object.values(DidMethods)}`;
+                 Expected one of: ${Object.values(registrar.DidMethods)}`;
             return res.status(400).send({message});
         }
 
         if (!username || !password) {
-            return res.status(400).send({message: "username and password needed to register"})
+            return res.status(400).send({message: 'username and password needed to register'})
         }
         if (await User.exists({username})) {
-            return res.status(400).send({message: "A user with that username already exists"});
+            return res.status(400).send({message: 'A user with that username already exists'});
         }
-        const {publicKeyBase58, idSec} = factomService.generateNewFactomKeypair();
-        return registerNewDid(username, publicKeyBase58, network)
+        const {publicKeyBase58, idSec} = factom.generateNewFactomKeypair();
+        return registrar.registerNewDid(username, publicKeyBase58, network)
             .then(({didState}) => {
                 const user = new User({
                     username,
@@ -57,7 +58,7 @@ export default ({config}) => {
                         res.status(500).send({message: 'Could not create new user'})
                     );
             }).catch(() =>
-                res.status(500).send({message: "Could not register a new DID"})
+                res.status(500).send({message: 'Could not register a new DID'})
             );
     });
 

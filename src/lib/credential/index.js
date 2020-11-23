@@ -1,8 +1,9 @@
-import {validateAssertionMethod} from '../did/resolver';
-import InvalidCredentialStructureError from "../error/InvalidCredentialStructureError";
+import {resolver} from '../did';
+import documentLoader from './documentLoader';
+import InvalidCredentialStructureError from '../error/InvalidCredentialStructureError';
 import factomDid from '../../resources/did/factomDid.json';
 import veresOneDid from '../../resources/did/veresOneDid.json';
-import InvalidIssuanceOptionsError from "../error/InvalidIssuanceOptionsError";
+import InvalidIssuanceOptionsError from '../error/InvalidIssuanceOptionsError';
 
 const AllowedProofPurposes = Object.freeze(['assertionMethod']);
 const AllowedIssuers = Object.freeze([factomDid.identity.did, veresOneDid.did]);
@@ -54,19 +55,19 @@ const getRequestedIssuer = options => {
     if (options.proofPurpose && !AllowedProofPurposes.includes(options.proofPurpose)) {
         const message = `Proof purpose not supported. Expected one of ${AllowedProofPurposes}
         but got: ${options.proofPurpose}`;
-        throw new InvalidIssuanceOptionsError(message);
+        return new Promise((_, reject) => reject(new InvalidIssuanceOptionsError(message)));
     }
 
     // if issuer specified
     if (options.issuer && AllowedIssuers.includes(options.issuer)) {
         if (options.assertionMethod) {
-            return validateAssertionMethod(options.assertionMethod, options.issuer);
+            return resolver.validateAssertionMethod(options.assertionMethod, options.issuer);
         }
         return options.issuer;
     }
 
     if (options.assertionMethod) {
-        return validateAssertionMethod(options.assertionMethod);
+        return resolver.validateAssertionMethod(options.assertionMethod);
     }
 
     throw new InvalidIssuanceOptionsError('Invalid options');
@@ -76,4 +77,5 @@ export {
     verifyCredentialStructure,
     assertValidIssuanceCredential,
     getRequestedIssuer,
+    documentLoader
 };
