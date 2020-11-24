@@ -7,6 +7,8 @@ import InvalidIssuanceOptionsError from '../error/InvalidIssuanceOptionsError';
 
 const AllowedProofPurposes = Object.freeze(['assertionMethod']);
 const AllowedIssuers = Object.freeze([factomDid.identity.did, veresOneDid.did]);
+const W3C_VC_CONTEXT_V1 = 'https://www.w3.org/2018/credentials/v1';
+const W3C_VC_TYPE = 'VerifiableCredential';
 
 const verifyCredentialStructure = (verifiableCredential) => {
     if (!verifiableCredential) {
@@ -37,12 +39,14 @@ const verifyCredentialStructure = (verifiableCredential) => {
 const assertValidIssuanceCredential = credential => {
     if (!credential) {
         throw new InvalidCredentialStructureError('Request must contain a credential');
-    }
-    if (!credential['@context']) {
+    } else if (!credential['@context']) {
         throw new InvalidCredentialStructureError('Credential must contain a context');
-    }
-    if (!credential.issuer) {
+    } else if (!credential.issuer) {
         throw new InvalidCredentialStructureError('Credential must have an issuer');
+    } else if (credential['@context'][0] !== W3C_VC_CONTEXT_V1) {
+        const message = `First value in credential context must be: ${W3C_VC_CONTEXT_V1} 
+        but got: ${credential['@context'][0]}`;
+        throw new InvalidCredentialStructureError(message)
     }
 };
 
@@ -77,5 +81,7 @@ export {
     verifyCredentialStructure,
     assertValidIssuanceCredential,
     getRequestedIssuer,
-    documentLoader
+    documentLoader,
+    W3C_VC_TYPE,
+    W3C_VC_CONTEXT_V1
 };

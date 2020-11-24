@@ -1,8 +1,6 @@
 import InvalidIssuerConfigError from "../error/InvalidIssuerConfigError";
 import {RevocationList2020} from "../revocation";
-
-const W3C_VC_CONTEXT_V1 = 'https://www.w3.org/2018/credentials/v1';
-const W3C_VC_TYPE = 'VerifiableCredential';
+import {W3C_VC_CONTEXT_V1, W3C_VC_TYPE} from '../credential';
 
 const validateIssuerConfig = issuerConfig => {
     if (!issuerConfig) {
