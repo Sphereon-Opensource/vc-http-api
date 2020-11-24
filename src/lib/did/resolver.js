@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import CachedDidDocuments from '../../resources/cache/CachedDidDocuments.json';
 import {primaryResolverUrl, secondaryResolverUrl} from '../../resources/config/resolverConfig.json';
-import InvalidRequestError from "../error/InvalidRequestError";
+import InvalidRequestError from '../error/InvalidRequestError';
 
 ;
 
@@ -13,7 +13,7 @@ const getDidDocument = did => {
         .then(res => res.json())
         .then(body => {
             if (!body.didDocument) {
-                throw new Error("Could not find did document with sphereon resolver.");
+                throw new Error('Could not find did document with sphereon resolver.');
             }
             return body.didDocument;
         })
@@ -21,7 +21,7 @@ const getDidDocument = did => {
             .then(res => res.json())
             .then(body => body.didDocument)
             .catch(() => {
-                throw {code: 400, message: "DID document not found"};
+                throw {code: 400, message: 'DID document not found'};
             }));
 };
 
@@ -45,10 +45,11 @@ const validateAssertionMethod = (assertionMethod, did) => {
     return getDidDocument(didUri)
         .then(didDocument => {
             if (!didDocument.assertionMethod) {
-                throw new InvalidRequestError('DID has not authorized assertionMethod.');
+                const message = `DID has no authorized assertionMethod. Supplied DID: ${didUri}`;
+                throw new InvalidRequestError(message);
             }
             if (!isAssertionMethodAuthorized(didDocument, assertionMethod)) {
-                throw new InvalidRequestError('DID has not authorized assertionMethod.');
+                throw new InvalidRequestError(`DID has not authorized assertionMethod. Supplied DID: ${didUri}`);
             }
             return didUri;
         });
