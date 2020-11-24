@@ -72,7 +72,7 @@ const issueFactomCredential = (credential, options) => {
     // set correct issuer
     credential.issuer = _getCorrectIssuer(credential, options);
 
-    // Todo: Verify DID
+    // TODO: Verify DID
     const suite = options ? getFactomSuiteFrom(options.did, options.idSec) : getFactomSuite();
     return vcjs.issue({credential, suite, documentLoader})
         .catch(err => parseVcJsIssuanceError(err));

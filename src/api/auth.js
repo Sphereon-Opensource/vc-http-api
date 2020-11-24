@@ -41,6 +41,9 @@ export default ({config}) => {
         if (await User.exists({username})) {
             return res.status(400).send({message: 'A user with that username already exists'});
         }
+        // TODO: Add support for multiple DID methods. Currently there is no logic here supporting multiple DID methods.
+        // The validation above will work for any extension of registrar.DidMethods, but the line below assumes did:factom
+        // is the only option.
         const {publicKeyBase58, idSec} = factom.generateNewFactomKeypair();
         return registrar.registerNewDid(username, publicKeyBase58, network)
             .then(({didState}) => {
