@@ -7,7 +7,7 @@ import request from 'supertest';
 import User from '../models/User';
 import sinon from 'sinon';
 import passport from '../middleware/passport';
-import resources from './resources/w3cTestResources';
+import w3cTestResources from './resources/w3cTestResources';
 import bodyParser from 'body-parser';
 
 const app = express();
@@ -56,10 +56,10 @@ describe('W3C VC HTTP API Tests', () => {
         describe('Issue Credential HTTP API', () => {
             let credentials;
             const issuer_vms = [];
-            const issuer = resources.issuers[0];
+            const issuer = w3cTestResources.issuers[0];
             describe(issuer.name + ' ' + issuer.endpoint, () => {
                 beforeEach(() => {
-                    const clonedVendorCredentials = cloneObj(resources.credentials);
+                    const clonedVendorCredentials = cloneObj(w3cTestResources.credentials);
                     credentials = annotateWithUniqueId(clonedVendorCredentials);
                 });
 
@@ -237,12 +237,12 @@ describe('W3C VC HTTP API Tests', () => {
         describe('Verify Credential HTTP API', () => {
             let verifiableCredentials;
             beforeEach(() => {
-                verifiableCredentials = cloneObj(resources.verifiable_credentials);
+                verifiableCredentials = cloneObj(w3cTestResources.verifiable_credentials);
             });
             // eslint-disable-next-line max-len
             describe(`1. The Verifier's Verify Credential HTTP API MUST fail to verify a Verifiable Credential with a mutated signature value (ex. a mutated jws) in the proof.`, () => {
                 it('should pass with no mutation', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -254,7 +254,7 @@ describe('W3C VC HTTP API Tests', () => {
                     expect(res.body.checks).to.eql(['proof']);
                 });
                 it('should fail with with mutation', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -270,7 +270,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe(`2. The Verifier's Verify Credential HTTP API MUST fail to verify a Verifiable Credential with the "created" property removed from the proof.`, () => {
                 it('should fail with without created in proof', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -286,7 +286,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe(`3. The Verifier's Verify Credential HTTP API MUST fail to verify a Verifiable Credential with a mutated "proofPurpose" in the proof.`, () => {
                 it('should fail ', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: {...verifiableCredentials[0]},
                         options: {
@@ -302,7 +302,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('4. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential with an added property to the credential.', () => {
                 it('should fail', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -318,7 +318,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('5. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential with a removed property from the credential.', () => {
                 it('should fail', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -334,7 +334,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('6. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential with a mutated property to the credential.', () => {
                 it('should fail ', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -350,7 +350,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('7. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential with an added property to the proof.', () => {
                 it('should fail ', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -366,7 +366,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('8. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential a removed property to the proof.', () => {
                 it('should fail ', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -382,7 +382,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('9. The Verifier\'s Verify Credential HTTP API MUST fail to verify a Verifiable Credential with a mutated property to the proof.', () => {
                 it('should fail ', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -398,10 +398,10 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('10. The Verifier\'s Verify Credential HTTP API MUST verify a Verifiable Credential with at least 2 different DID methods set as the issuer property for a credential.', () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const unique_issuers = [];
                     await Promise.all(
-                        resources.verifiable_credentials.map(async vc => {
+                        w3cTestResources.verifiable_credentials.map(async vc => {
                             const body = {
                                 verifiableCredential: vc,
                                 options: {
@@ -423,7 +423,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('11. The Verifier\'s Verify Credential HTTP API MUST adhere to the proof verification format.', () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: verifiableCredentials[0],
                         options: {
@@ -439,7 +439,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('12. The Verifier\'s Verify Credential HTTP API MUST return a 400 HTTP response status code when the request is rejected.', () => {
                 it('should have error', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const body = {
                         verifiableCredential: null,
                         options: {
@@ -454,7 +454,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('13. The Verifier\'s Verify Credential HTTP API MUST support the verification of, JSON-LD Proof, Ed25519Signature2018.', () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_credential_endpoint;
+                    const endpoint = w3cTestResources.verify_credential_endpoint;
                     const vc = verifiableCredentials[0];
                     const proof = Array.isArray(vc.proof) ? vc.proof : [vc.proof];
                     const type = 'Ed25519Signature2018';
@@ -476,12 +476,12 @@ describe('W3C VC HTTP API Tests', () => {
         describe('Verify Presentation HTTP API', () => {
             let verifiablePresentations;
             beforeEach(() => {
-                verifiablePresentations = cloneObj(resources.verifiable_presentations);
+                verifiablePresentations = cloneObj(w3cTestResources.verifiable_presentations);
             });
             // eslint-disable-next-line max-len
             describe(`1. The Verifier's Verify Presentation HTTP API MUST verify a Verifiable Presentation where the credential's issuer, presentation's holder and credential's subject are different.`, () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     const solutions = [];
                     // this logic needs to account for object and string variations...
                     const test_vps = verifiablePresentations.filter(vp => {
@@ -520,7 +520,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe(`2. The Verifier's Verify Presentation HTTP API MUST verify a Verifiable Presentation where the credential's issuer, presentation's holder and credential's subject are the same.`, () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     // this logic needs to account for object and string variations...
                     const test_vps = verifiablePresentations.filter(vp => {
                         return (
@@ -551,7 +551,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('3. The Verifier\'s Verify Presentation HTTP API MUST adhere to the proof verification format.', () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     const body = {
                         verifiablePresentation: verifiablePresentations[0],
                         options: {
@@ -569,7 +569,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('4. The Verifier\'s Verify Presentation HTTP API MUST return a 400 HTTP response status code when the request is rejected.', () => {
                 it('should have error', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     const body = {
                         verifiablePresentation: null,
                         options: {
@@ -586,7 +586,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe('5. The Verifier\'s Verify Presentation HTTP API MUST support the verification of, JSON-LD Proof, Ed25519Signature2018.', () => {
                 it('should pass', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     const vp = verifiablePresentations[0];
                     const proof = Array.isArray(vp.proof) ? vp.proof : [vp.proof];
                     const type = 'Ed25519Signature2018';
@@ -609,7 +609,7 @@ describe('W3C VC HTTP API Tests', () => {
             // eslint-disable-next-line max-len
             describe(`6. The Verifier's Verify Presentation HTTP API MUST support "options.challenge" in the body of the POST request.`, () => {
                 it('should have error', async () => {
-                    const endpoint = resources.verify_presentation_endpoint;
+                    const endpoint = w3cTestResources.verify_presentation_endpoint;
                     const body = {
                         verifiablePresentation: verifiablePresentations[0],
                     };
