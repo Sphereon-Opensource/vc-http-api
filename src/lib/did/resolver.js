@@ -1,28 +1,21 @@
 import fetch from 'node-fetch';
 import CachedDidDocuments from '../../resources/cache/CachedDidDocuments.json';
-import {primaryResolverUrl, secondaryResolverUrl} from '../../resources/config/resolverConfig.json';
+import {didResolvers} from '../../resources/config/resolverConfig.json';
 import InvalidRequestError from '../error/InvalidRequestError';
 
-;
-
-const getDidDocument = did => {
+const getDidDocument = async did => {
     if (CachedDidDocuments[did]) {
-        return new Promise(resolve => resolve(CachedDidDocuments[did]));
+        return CachedDidDocuments[did];
     }
-    return fetch(`${primaryResolverUrl}/${did}`)
-        .then(res => res.json())
-        .then(body => {
-            if (!body.didDocument) {
-                throw new Error('Could not find did document with sphereon resolver.');
-            }
-            return body.didDocument;
-        })
-        .catch(() => fetch(`${secondaryResolverUrl}/${did}`)
+    for (const resolverConfig of didResolvers) {
+        const body = await fetch(`${resolverConfig.url}/${did}`)
             .then(res => res.json())
-            .then(body => body.didDocument)
-            .catch(() => {
-                throw {code: 400, message: 'DID document not found'};
-            }));
+            .catch(() => ({didDocument: false}));
+        if (body.didDocument) {
+            return body.didDocument;
+        }
+    }
+    throw new Error(`No did document could be found for ${did}`);
 };
 
 const extractDidFromVerificationMethod = verificationMethod => {

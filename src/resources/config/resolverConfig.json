@@ -1,4 +1,10 @@
 {
-  "primaryResolverUrl": "https://uniresolver.sphereon.io//1.0/identifiers",
-  "secondaryResolverUrl": "https://uniresolver.io/1.0/identifiers"
+  "didResolvers": [
+    {
+      "url": "https://uniresolver.sphereon.io//1.0/identifiers"
+    },
+    {
+      "url": "https://uniresolver.io/1.0/identifiers"
+    }
+  ]
 }
