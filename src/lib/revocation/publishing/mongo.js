@@ -1,4 +1,3 @@
-import Promise from 'promise';
 import Credential from '../../../models/Credential';
 import {baseUrl} from '../../../config.json';
 import ResourceConflictError from "../../error/ResourceConflictError";

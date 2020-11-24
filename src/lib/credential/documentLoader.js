@@ -1,12 +1,10 @@
-import {getDidDocument} from './didDocumentService';
+import {resolver} from '../did';
+import fetch from 'node-fetch';
+import {extendContextLoader} from 'jsonld-signatures';
+import {defaultDocumentLoader} from 'vc-js';
+import customContexts from '../../resources/cache/customContexts.json';
 
-const {extendContextLoader} = require('jsonld-signatures');
-const customContexts = require('../resources/cache/customContexts.json');
-const {defaultDocumentLoader} = require('vc-js');
-const Promise = require('promise');
-const fetch = require('node-fetch');
-
-function customDocumentLoader(url) {
+const documentLoaderExtension = (url) => {
     if (customContexts[url]) {
         return new Promise(resolve => resolve({
             contextUrl: null,
@@ -15,7 +13,7 @@ function customDocumentLoader(url) {
         }));
     }
     if (url.includes('did:')) {
-        return getDidDocument(url).then(didDocument => (
+        return resolver.getDidDocument(url).then(didDocument => (
             {
                 contextUrl: null,
                 documentUrl: url,
@@ -30,9 +28,9 @@ function customDocumentLoader(url) {
                 documentUrl: url,
                 document: jsonContext
             }
-        )).catch(err => defaultDocumentLoader(url));
+        )).catch(() => defaultDocumentLoader(url));
 }
 
-const documentLoader = extendContextLoader(customDocumentLoader);
+const documentLoader = extendContextLoader(documentLoaderExtension);
 
-module.exports = {documentLoader};
+export default documentLoader;

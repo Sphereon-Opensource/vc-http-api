@@ -79,6 +79,7 @@ describe('Revocation tests', () => {
                 gitHubOptions:{
                     ...gitHubRevocationConfig.gitHubOptions,
                     path: 'test.jsonld',
+                    useGitHubPages: true,
                 },
             }
             publishRevocationCredential(revocationCredentialExample, revocationConfig)
