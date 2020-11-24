@@ -27,7 +27,9 @@ const getDidDocument = did => {
 
 const extractDidFromVerificationMethod = verificationMethod => {
     if (!verificationMethod.includes('#')) {
-        throw new InvalidRequestError('Invalid verification method.');
+        const message = `Invalid verification method. Received: ${verificationMethod} but
+        expected something of the form {identifier}#{key-id}`;
+        throw new InvalidRequestError(message);
     }
     return verificationMethod.split('#')[0];
 };
