@@ -5,7 +5,7 @@
   "driver": {
     "factom": {
       "id": "driver-did-nodejs-factom",
-      "registerEndpoint": "1.0/register"
+      "registerEndpoint": "1.0/create"
     }
   }
 }

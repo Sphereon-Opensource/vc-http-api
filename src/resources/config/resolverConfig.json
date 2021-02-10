@@ -1,7 +1,7 @@
 {
   "didResolvers": [
     {
-      "url": "https://uniresolver.sphereon.io//1.0/identifiers"
+      "url": "https://uniresolver.sphereon.io/1.0/identifiers"
     },
     {
       "url": "https://uniresolver.io/1.0/identifiers"
