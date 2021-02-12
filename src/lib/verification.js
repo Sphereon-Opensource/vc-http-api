@@ -3,11 +3,14 @@ import revocation from '../api/revocation';
 import {documentLoader} from './credential';
 import {resolver} from './did';
 import VerificationError from './error/VerificationError';
-import {Ed25519KeyPair} from 'crypto-ld';
+import {Ed25519KeyPair, RSAKeyPair} from 'crypto-ld';
 import {suites} from 'jsonld-signatures';
 import vcjs from 'vc-js';
 import InvalidRequestError from './error/InvalidRequestError';
 import {parseVcJsVerificationError} from './util';
+import base58 from 'bs58';
+
+const VERIFICATION_METHOD_KEY_EXPANDED = 'https://w3id.org/security#verificationMethod';
 
 const verifyCredential = async (verifiableCredential) => {
     const verify = await _getVerificationFunction(verifiableCredential);
@@ -29,18 +32,16 @@ const verifyCredential = async (verifiableCredential) => {
 };
 
 const getSuite = async proof => {
-    const {verificationMethod} = proof;
-    if (!verificationMethod) {
-        throw  new InvalidRequestError('Invalid proof!');
-    }
+    const verificationMethod = _getVerificationMethod(proof);
     const did = resolver.extractDidFromVerificationMethod(verificationMethod);
     return resolver.getDidDocument(did).then(didDocument => {
         const key = getKeyForVerificationMethod(verificationMethod, didDocument);
-        const importKey = new Ed25519KeyPair({...key});
-        return new suites.Ed25519Signature2018({
-            verificationMethod: key.id,
-            key: importKey,
-        });
+        if (Array.isArray(key.type) && key.type.includes('RSAVerificationKey')) {
+            return _getRsaSuite(key);
+        } else {
+            return _getEd25519Suite(key);
+        }
+
     });
 };
 
@@ -122,6 +123,46 @@ const _getVerificationFunction = async (vc) => {
     const suite = await getSuite(proof);
     return credential => vcjs.verifyCredential({credential, suite, documentLoader})
         .catch(parseVcJsVerificationError);
+};
+
+const _publicKeyBase58ToPem = publcKeyBase58 => {
+    const base64PublicKey = Buffer.from(base58.decode(publcKeyBase58)).toString('base64');
+    return '-----BEGIN PUBLIC KEY-----\r\n' + base64PublicKey + '\r\n-----END PUBLIC KEY-----\r\n';
+};
+
+const _getVerificationMethod = proof => {
+    let verificationMethod = proof.verificationMethod || proof[VERIFICATION_METHOD_KEY_EXPANDED];
+    if(typeof verificationMethod === 'object'){
+        verificationMethod =  verificationMethod.id;
+    }
+    if (!verificationMethod) {
+        throw new InvalidRequestError('Invalid proof!');
+    }
+    return verificationMethod
+};
+
+const _getRsaSuite = key => {
+    let publicKeyPem;
+    if (!key.publicKeyPem) {
+        publicKeyPem = _publicKeyBase58ToPem(key.publicKeyBase58);
+    } else {
+        publicKeyPem = key.publicKeyPem;
+    }
+    const keyPair = new RSAKeyPair({publicKeyPem});
+    keyPair.id = key.id;
+    keyPair.controller = key.controller;
+    return new suites.RsaSignature2018({
+        verificationMethod: keyPair.id,
+        key: keyPair
+    });
+};
+
+const _getEd25519Suite = key => {
+    const importKey = new Ed25519KeyPair({...key});
+    return new suites.Ed25519Signature2018({
+        verificationMethod: key.id,
+        key: importKey,
+    });
 }
 
 export {verifyCredential, verifyPresentation, getSuite};

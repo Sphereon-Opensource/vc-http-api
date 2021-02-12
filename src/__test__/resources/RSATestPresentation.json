@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "id": "ebc6f1c2",
+  "holder": "did:factom:testnet:a4cf22d1e3a3811ca4a6e9ce31b7ad28f98ceb9664ea1eee83ff8c313aabf990",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "issuer": "did:factom:testnet:a4cf22d1e3a3811ca4a6e9ce31b7ad28f98ceb9664ea1eee83ff8c313aabf990",
+      "type": [
+        "VerifiableCredential",
+        "AlumniCredential"
+      ],
+      "issuanceDate": "2010-01-01T19:23:24Z",
+      "credentialSubject": {
+        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "alumniOf": "Example University"
+      },
+      "proof": {
+        "type": "RsaSignature2018",
+        "created": "2021-02-11T15:37:31Z",
+        "https://w3id.org/security#jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..dq6vGqa7EMeTqBmYi_47i15PWE3GV90x4zccsefXw8seuYETy3K7H8gmlE-gVFuCow2sYvw_v86XzYEF066f2PM6KpkNYW0KhLoO3rEmCxajRY1nthK6WHQWlPowv-ttXNAKsNcV5dwXlUmlGWY-CgENje_qKfxbeTXmq3F5SW1wuBqoaIJXBBAcCIwyC0R1c0AUA_5jQyQHKEnPLGzltyH9Fv4b5QPK9ql1sQcJhKotbfihNyGQUGpbv92pbku-I3WrjhMJtAfEBFmhn6xrA4XQpojPigUwxPmaNhXA70iGk6fH4db1Qqle4e-al5VayKc1YwL9DPe3Yxr9LR6BjA",
+        "https://w3id.org/security#proofPurpose": {
+          "id": "https://w3id.org/security#assertionMethod"
+        },
+        "https://w3id.org/security#verificationMethod": {
+          "id": "did:factom:testnet:a4cf22d1e3a3811ca4a6e9ce31b7ad28f98ceb9664ea1eee83ff8c313aabf990#public-0"
+        }
+      }
+    }
+  ],
+  "proof": {
+    "type": "RsaSignature2018",
+    "http://purl.org/dc/terms/created": {
+      "type": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "@value": "2021-02-11T16:05:05Z"
+    },
+    "https://w3id.org/security#jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..aCVRM0P4mKl8Fz4ky1duZQbm05TyyDzgONG2PTKt8Ffk_ypzbeT2tR-FCcZYyZGgjl1AXYu1mDza_fT59UXaC9QNOeNong6CQqHUjOzd2xPN_uk7IojwnKNh4mgxM7tXkqdPkJnTyITdLzuvmduNDst_iq7lv2mKhj56LERgxDjg0y1IDtrq_WfCZ7xSSH7igbCiGeUQYsp9xFAAbUovdCphxKK4ucmfLLKPYrdkpvX5RP6ZkuKNX_d8-tHwDI7EU5su5cz9aonANjYBiokXT8d768Mgp_gBnm8TUTWZHrCCLin2uuawSP0hfyO8uZdcdMVCEJ8001cbMv9dBAHjow",
+    "https://w3id.org/security#proofPurpose": {
+      "id": "https://w3id.org/security#assertionMethod"
+    },
+    "https://w3id.org/security#verificationMethod": {
+      "id": "did:factom:testnet:a4cf22d1e3a3811ca4a6e9ce31b7ad28f98ceb9664ea1eee83ff8c313aabf990#public-0"
+    }
+  }
+}
+
