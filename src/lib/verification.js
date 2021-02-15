@@ -6,11 +6,11 @@ import VerificationError from './error/VerificationError';
 import {Ed25519KeyPair, RSAKeyPair} from 'crypto-ld';
 import {suites} from 'jsonld-signatures';
 import vcjs from 'vc-js';
+import base58 from 'bs58';
 import InvalidRequestError from './error/InvalidRequestError';
 import {parseVcJsVerificationError} from './util';
-import base58 from 'bs58';
+import {VERIFICATION_METHOD_KEY_EXPANDED} from './credential';
 
-const VERIFICATION_METHOD_KEY_EXPANDED = 'https://w3id.org/security#verificationMethod';
 
 const verifyCredential = async (verifiableCredential) => {
     const verify = await _getVerificationFunction(verifiableCredential);
@@ -132,8 +132,8 @@ const _publicKeyBase58ToPem = publcKeyBase58 => {
 
 const _getVerificationMethod = proof => {
     let verificationMethod = proof.verificationMethod || proof[VERIFICATION_METHOD_KEY_EXPANDED];
-    if(typeof verificationMethod === 'object'){
-        verificationMethod =  verificationMethod.id;
+    if (typeof verificationMethod === 'object') {
+        verificationMethod = verificationMethod.id;
     }
     if (!verificationMethod) {
         throw new InvalidRequestError('Invalid proof!');
