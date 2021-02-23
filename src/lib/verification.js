@@ -10,6 +10,7 @@ import base58 from 'bs58';
 import InvalidRequestError from './error/InvalidRequestError';
 import {parseVcJsVerificationError} from './util';
 import {VERIFICATION_METHOD_KEY_EXPANDED} from './credential';
+import Secp256k1KeyPair from 'secp256k1-key-pair';
 
 
 const verifyCredential = async (verifiableCredential) => {
@@ -36,8 +37,12 @@ const getSuite = async proof => {
     const did = resolver.extractDidFromVerificationMethod(verificationMethod);
     return resolver.getDidDocument(did).then(didDocument => {
         const key = getKeyForVerificationMethod(verificationMethod, didDocument);
-        if (Array.isArray(key.type) && key.type.includes('RSAVerificationKey')) {
-            return _getRsaSuite(key);
+        if (Array.isArray(key.type)) {
+            if (key.type.includes('RSAVerificationKey')) {
+                return _getRsaSuite(key);
+            } else {
+                return _getECDSASuite(key);
+            }
         } else {
             return _getEd25519Suite(key);
         }
@@ -162,6 +167,21 @@ const _getEd25519Suite = key => {
     return new suites.Ed25519Signature2018({
         verificationMethod: key.id,
         key: importKey,
+    });
+};
+
+const _getECDSASuite = key => {
+    const keyPairOptions = {
+        ...key,
+        type: 'EcdsaSecp256k1VerificationKey2019',
+    };
+    const keyPair = new Secp256k1KeyPair(keyPairOptions);
+    return new suites.JwsLinkedDataSignature({
+        type: 'EcdsaSecp256k1Signature2019',
+        alg: 'ECDSA',
+        LDKeyClass: Secp256k1KeyPair,
+        verificationMethod: keyPair.id,
+        key: keyPair
     });
 }
 
