@@ -1,6 +1,6 @@
 {
   "name": "vc-http-api",
-  "version": "1.3.0",
+  "version": "1.4.0-SNAPSHOT",
   "description": "Issue VCs and verify all W3C compliant credentials",
   "main": "dist",
   "scripts": {
