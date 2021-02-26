@@ -9,6 +9,11 @@ const AllowedProofPurposes = Object.freeze(['assertionMethod']);
 const AllowedIssuers = Object.freeze([factomDid.identity.did, veresOneDid.did]);
 const W3C_VC_CONTEXT_V1 = 'https://www.w3.org/2018/credentials/v1';
 const W3C_VC_TYPE = 'VerifiableCredential';
+const VERIFICATION_METHOD_KEY_EXPANDED = 'https://w3id.org/security#verificationMethod';
+const PROOF_PURPOSE_KEY_EXPANDED = 'https://w3id.org/security#proofPurpose';
+const ASSERTION_METHOD_VALUE_EXPANDED = Object.freeze({
+    'id': 'https://w3id.org/security#assertionMethod'
+});
 
 const verifyCredentialStructure = (verifiableCredential) => {
     if (!verifiableCredential) {
@@ -18,16 +23,20 @@ const verifyCredentialStructure = (verifiableCredential) => {
         throw new InvalidCredentialStructureError('Verifiable credential requires proof.');
     }
     const {proof} = verifiableCredential;
-    if (!proof.verificationMethod) {
+    if (!proof.verificationMethod && !proof[VERIFICATION_METHOD_KEY_EXPANDED]) {
         throw new InvalidCredentialStructureError('Credential proof verification method not found.');
     }
 
-    if (!proof.proofPurpose) {
+    if (!proof.proofPurpose && !proof[PROOF_PURPOSE_KEY_EXPANDED]) {
         throw new InvalidCredentialStructureError('Credential proof requires proof purpose field.');
     }
 
-    if (proof.proofPurpose !== 'assertionMethod') {
+    const proofPurpose = proof.proofPurpose || proof[PROOF_PURPOSE_KEY_EXPANDED];
+    if (typeof proofPurpose == 'string' && proofPurpose !== 'assertionMethod') {
         const message = `Expected proof.proofPurpose to be assertionMethod. Got: ${proof.proofPurpose}`;
+        throw new InvalidCredentialStructureError(message);
+    } else if (proofPurpose === 'object' && JSON.stringify(proofPurpose) !== JSON.stringify(ASSERTION_METHOD_VALUE_EXPANDED)) {
+        const message = `Expected proof.proofPurpose to be ${JSON.stringify(ASSERTION_METHOD_VALUE_EXPANDED)} but got: ${proofPurpose}`;
         throw new InvalidCredentialStructureError(message);
     }
 
@@ -83,5 +92,6 @@ export {
     getRequestedIssuer,
     documentLoader,
     W3C_VC_TYPE,
-    W3C_VC_CONTEXT_V1
+    W3C_VC_CONTEXT_V1,
+    VERIFICATION_METHOD_KEY_EXPANDED
 };

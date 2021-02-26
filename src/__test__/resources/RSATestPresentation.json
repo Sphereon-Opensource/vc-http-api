@@ -1,0 +1,53 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "holder": "did:factom:testnet:ba7a64e48959a7d9fd76cb7cdd1c4b0f56be27407db2558964e670e48631915d",
+  "verifiableCredential": [
+    {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "id": "http://example.gov/credentials/3732",
+      "type": [
+        "VerifiableCredential",
+        "UniversityDegreeCredential"
+      ],
+      "issuer": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A",
+      "issuanceDate": "2020-03-10T04:24:12.164Z",
+      "credentialSubject": {
+        "id": "did:key:z6Mkg9AkjefxdJFSphkStzXwHQnbweN43mCqA37aANGRxF1o",
+        "degree": {
+          "type": "BachelorDegree",
+          "name": "Bachelor of Science and Arts"
+        }
+      },
+      "proof": {
+        "type": "Ed25519Signature2018",
+        "created": "2020-04-25T11:19:06Z",
+        "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..CkuDMh2dHk10jcO-nNOaVhJZ5qVJ3iw4gBZc22D-W_lL9OrCxJjucrqB-3-X7b1HLxp7bOWZ1Oj-AlJOTAgpAw",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:v1:test:nym:z6MkvSbsrm44VnhngbyW2rZk2u9bvSPUSmJwqYjMd4RSJT7A#z6MkjFhRvbXfjmQ8iFHeYh42cNS7v4CtguLzvwZSXcHe8zqy"
+      }
+    }
+  ],
+  "proof": {
+    "type": "RsaSignature2018",
+    "http://purl.org/dc/terms/created": {
+      "type": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "@value": "2021-02-15T12:44:53Z"
+    },
+    "https://w3id.org/security#challenge": "1234",
+    "https://w3id.org/security#jws": "eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..cNCo1ZGcxqqqsjJ6nBxw7KRHmwq0kXLYiSRvMRU42AUcvOytu61B3qgErWGrmTT8H1iS4QVyyEBJ1wG6iPi0En5Z9wkehePr_GZvnBaYLgQuVnFLilZRgskWzWb-IqoXK0T7H1LiUg3ljtxUPO9gmkbZjI3W44MF-EaYU04VCTVY9Ht1mNVDZaGyrTGtLkFc75UQYfk2Dz-caAQvTIqY-foKFxK7ysiMU1yLFwgCqFEpXJXjK9TNLfyad8CylpqeiQiK3Hsn2Dymziyn6D-5LEt4b-ozd7CRYZquD5LyX40bX1zvZSowSRE7FdtnJoHxKx8EvnU55TDn-vzDfx4jxw",
+    "https://w3id.org/security#proofPurpose": {
+      "id": "https://w3id.org/security#authenticationMethod"
+    },
+    "https://w3id.org/security#verificationMethod": {
+      "id": "did:factom:testnet:ba7a64e48959a7d9fd76cb7cdd1c4b0f56be27407db2558964e670e48631915d#public-0"
+    }
+  }
+}
