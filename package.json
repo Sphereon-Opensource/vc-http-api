@@ -38,7 +38,7 @@
     "express": "^4.13.3",
     "factom-identity-lib": "^0.2.1",
     "github-api": "^3.3.0",
-    "handlebars": "^4.7.6",
+    "handlebars": "^4.7.7",
     "husky": "^4.2.4",
     "jsonld": "^3.1.0",
     "jsonld-signatures": "^5.0.1",
